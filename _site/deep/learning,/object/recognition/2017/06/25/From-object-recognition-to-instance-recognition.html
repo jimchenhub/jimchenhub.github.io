@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>About</title>
-  <meta name="description" content="This Blog is about my learning and daily life.">
+  <title>From object recognition to instance recognition</title>
+  <meta name="description" content="最近考完试重新开始学习物体识别相关的知识。之前大作业的时候就学习过RCNN系列的三篇论文，然后自己尝试了基于SegNet的semantic segmentation任务。前段时间看Kaiming大神 的Mask R-CNN，又想重新温故一下这一系列的文章，正好也是第一次在知乎上写文章，就当作给自己看的论文的一个总...">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="http://localhost:4000/about/">
+  <link rel="canonical" href="http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition.html">
   <link rel="alternate" type="application/rss+xml" title="JimChen&#39;s Blog" href="/feed.xml">
   
   
@@ -67,26 +67,37 @@
 
     <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title">About</h1>
+    <h1 class="post-title" itemprop="name headline">From object recognition to instance recognition</h1>
+    <p class="post-meta">
+      <time datetime="2017-06-25T20:38:00+08:00" itemprop="datePublished">
+        
+        Jun 25, 2017
+      </time>
+      </p>
   </header>
 
-  <div class="post-content">
-    <p>This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at <a href="https://jekyllrb.com/">jekyllrb.com</a></p>
+  <div class="post-content" itemprop="articleBody">
+    <p>最近考完试重新开始学习物体识别相关的知识。之前大作业的时候就学习过RCNN系列的三篇论文，然后自己尝试了基于SegNet的semantic segmentation任务。前段时间看Kaiming大神 的Mask R-CNN，又想重新温故一下这一系列的文章，正好也是第一次在知乎上写文章，就当作给自己看的论文的一个总结的地方吧。（反正也没人看，我就随便写写了）
+先推荐一个之前在知乎上看的一个专栏（<a href="https://zhuanlan.zhihu.com/xiaoleimlnote">晓雷机器学习笔记</a>）的这个系列，感觉写的也很不错，所以放在这里做个列表：</p>
 
-<p>You can find the source code for Minima at GitHub:
-<a href="https://github.com/jekyll">jekyll</a> /
-<a href="https://github.com/jekyll/minima">minima</a></p>
+<ul>
+  <li><a href="https://zhuanlan.zhihu.com/p/23006190?refer=xiaoleimlnote">R-CNN</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/24780395?refer=xiaoleimlnote">Fast R-CNN</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/24916624?refer=xiaoleimlnote">Faster R-CNN</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/24774302?refer=xiaoleimlnote">SPPNet</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/24916786?refer=xiaoleimlnote">YOLO</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/24954433?refer=xiaoleimlnote">SSD</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/25167153?refer=xiaoleimlnote">YOLO2</a></li>
+</ul>
 
-<p>You can find the source code for Jekyll at GitHub:
-<a href="https://github.com/jekyll">jekyll</a> /
-<a href="https://github.com/jekyll/jekyll">jekyll</a></p>
-
+<p>之后应该是直接看到了Mask R-CNN这篇文章，附上Tensorflow版的代码地址（<a href="https://github.com/CharlesShang/FastMaskRCNN">CharlesShang/FastMaskRCNN</a>），近期准备看看源码学习一下。</p>
 
   </div>
 
+  
 </article>
 
       </div>
