@@ -1,5 +1,1200 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-07-04T17:40:33+08:00</updated><id>http://localhost:4000/</id><title type="html">JimChen’s Blog</title><subtitle>This Blog is about my learning and daily life.
-</subtitle><entry><title type="html">From object recognition to instance recognition</title><link href="http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition.html" rel="alternate" type="text/html" title="From object recognition to instance recognition" /><published>2017-06-25T20:38:00+08:00</published><updated>2017-06-25T20:38:00+08:00</updated><id>http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition</id><content type="html" xml:base="http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition.html">&lt;p&gt;最近考完试重新开始学习物体识别相关的知识。之前大作业的时候就学习过RCNN系列的三篇论文，然后自己尝试了基于SegNet的semantic segmentation任务。前段时间看Kaiming大神 的Mask R-CNN，又想重新温故一下这一系列的文章，正好也是第一次在知乎上写文章，就当作给自己看的论文的一个总结的地方吧。（反正也没人看，我就随便写写了）
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-07-04T21:18:49+08:00</updated><id>http://localhost:4000/</id><title type="html">JimChen’s Blog</title><subtitle>This Blog is about my learning and daily life.
+</subtitle><entry><title type="html">Caffe Learning Notes(4)</title><link href="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(4).html" rel="alternate" type="text/html" title="Caffe Learning Notes(4)" /><published>2017-07-04T20:00:00+08:00</published><updated>2017-07-04T20:00:00+08:00</updated><id>http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(4)</id><content type="html" xml:base="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(4).html">&lt;h1 id=&quot;模块学习layer&quot;&gt;模块学习——Layer&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/layer_structure.png&quot; alt=&quot;Layer structures&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;Activation/NeuronLayer&lt;/code&gt;类 定义于&lt;code&gt;neuron_layers.hpp&lt;/code&gt;中，其派生类主要是元素级别的运算（比如Dropout运算，激活函数ReLu，Sigmoid等），运算均为同址计算（in-place computation，返回值覆盖原值而占用新的内存）。&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;LossLayer&lt;/code&gt;类 定义于&lt;code&gt;loss_layers.hpp&lt;/code&gt;中，其派生类会产生loss，只有这些层能够产生loss。&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;DataLayer&lt;/code&gt; 定义于&lt;code&gt;data_layer.hpp&lt;/code&gt;中，作为网络的最底层，主要实现数据格式的转换。&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Vision&lt;/code&gt; Layer 定义于&lt;code&gt;vision_layers.hpp&lt;/code&gt;，实现特征表达功能，更具体地说包含卷积操作，Pooling操作，他们基本都会产生新的内存占用（Pooling相对较小）。&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Common Layers&lt;/code&gt; 定义于&lt;code&gt;common_layers.hpp&lt;/code&gt;，Caffe提供了单个层与多个层的连接，并在这个头文件中声明。这里还包括了常用的全连接层&lt;code&gt;InnerProductLayer&lt;/code&gt;类。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;首先来看layer类的构造部分，以及Public部分的函数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+class Layer {
+ public:
+  explicit Layer(const LayerParameter&amp;amp; param)
+    : layer_param_(param), is_shared_(false) {
+      // Set phase and copy blobs (if there are any).
+      phase_ = param.phase();
+      if (layer_param_.blobs_size() &amp;gt; 0) {
+        blobs_.resize(layer_param_.blobs_size());
+        for (int i = 0; i &amp;lt; layer_param_.blobs_size(); ++i) {
+          blobs_[i].reset(new Blob&amp;lt;Dtype&amp;gt;());
+          blobs_[i]-&amp;gt;FromProto(layer_param_.blobs(i));
+        }
+      }
+    }
+  virtual ~Layer() {}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Layer层的主要的参数和成员变量:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; /** The protobuf that stores the layer parameters */
+ // 层说明参数，从protocal buffers格式的网络结构说明文件中读取
+  LayerParameter layer_param_;
+  /** The phase: TRAIN or TEST */
+  // 层状态，参与网络的训练还是测试
+  Phase phase_;
+  /** The vector that stores the learnable parameters as a set of blobs. */
+  // 层权值和偏置参数，使用向量是因为权值参数和偏置是分开保存在两个blob中的
+  vector&amp;lt;shared_ptr&amp;lt;Blob&amp;lt;Dtype&amp;gt; &amp;gt; &amp;gt; blobs_;
+  /** Vector indicating whether to compute the diff of each param blob. */
+  // 标志每个top blob是否需要计算反向传递的梯度值
+  vector&amp;lt;bool&amp;gt; param_propagate_down_;
+
+  /** The vector that indicates whether each top blob has a non-zero weight in
+   *  the objective function. */
+   // 每一个top blob中是否有非零的权值
+  vector&amp;lt;Dtype&amp;gt; loss_;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;首先获得当前网络的phase，是&lt;code&gt;train&lt;/code&gt;还是&lt;code&gt;test&lt;/code&gt;，在初始化列表初始化&lt;code&gt;LayerParameter&lt;/code&gt;,之后&lt;code&gt;blobs_&lt;/code&gt;这里存放的是一个指向blob类的&lt;code&gt;shared_ptr&lt;/code&gt;指针的一个vector，在这里是申请空间，然后将传入的&lt;code&gt;layer_param&lt;/code&gt;中的blob拷贝过来。&lt;/p&gt;
+
+&lt;p&gt;初始化函数SetUp()&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/**
+   * @brief 实现每个layer对象的setup函数
+   * @param bottom 
+   * 层的输入数据，blob中的存储空间已申请
+   * @param top
+   * 层的输出数据，blob对象以构造但是其中的存储空间未申请，
+   * 具体空间大小需根据bottom blob大小和layer_param_共同决定，具体在Reshape函数现实
+
+   * 1. 检查输入输出blob个数是否满足要求，每个层能处理的输入输出数据不一样
+   * 2. 调用LayerSetUp函数初始化特殊的层，每个Layer子类需重写这个函数完成定制的初始化
+   * 3. 调用Reshape函数为top blob分配合适大小的存储空间
+   * 4. 为每个top blob设置损失权重乘子，非LossLayer为的top blob其值为零
+   *
+   * 此方法非虚函数，不用重写，模式固定
+   */
+  void SetUp(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
+    CheckBlobCounts(bottom, top);
+    LayerSetUp(bottom, top);
+    Reshape(bottom, top);
+    SetLossWeights(top);
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里是&lt;code&gt;Setup&lt;/code&gt;函数，首先check 这个bottom和top的blob是否正确，再调用&lt;code&gt;Layersetup&lt;/code&gt;对每一具体的层做进一步设置，之后再做reshape来设置top blobs和internal buffer。最后再设置loss weight multiplier 的blob对每一个非零的loss和weight，一般这个方法被继承之后是不会被重写的。&lt;/p&gt;
+
+&lt;p&gt;每个子类Layer必须重写的初始化函数LayerSetUp和Reshape函数。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;LayerSetup&lt;/code&gt;就是对具体某一个layer的setup,被上面的那个函数所调用，&lt;code&gt;ShareInParallel&lt;/code&gt;和&lt;code&gt;IsShared&lt;/code&gt;和&lt;code&gt;SetShared&lt;/code&gt;分别是用来返回并行状态和获得这一layer是否被多个nets所共享，默认是除了data layer都是关闭的。在多个GPU下的Train阶段以及share是true的情况下,is_shared将会被置成true。&lt;/p&gt;
+
+&lt;p&gt;Reshape函数完成top blob形状的设置并为其分配存储空间。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;virtual inline bool ShareInParallel() 
+inline bool IsShared() const
+inline void SetShared(bool is_shared)
+
+ /**
+   * @brief Does layer-specific setup: your layer should implement this function
+   *        as well as Reshape.
+   *        定制初始化，每个子类layer必须实现此虚函数
+   *
+   * @param bottom
+   *     the preshaped input blobs, whose data fields store the input data for
+   *     this layer
+   *     输入blob, 数据成员data_和diff_存储了相关数据
+   * @param top
+   *     the allocated but unshaped output blobs
+   *     输出blob, blob对象已构造但数据成员的空间尚未申请
+   *
+   * This method should do one-time layer specific setup. This includes reading
+   * and processing relevent parameters from the &amp;lt;code&amp;gt;layer_param_&amp;lt;/code&amp;gt;.
+   * Setting up the shapes of top blobs and internal buffers should be done in
+   * &amp;lt;code&amp;gt;Reshape&amp;lt;/code&amp;gt;, which will be called before the forward pass to
+   * adjust the top blob sizes.
+   * 此方法执行一次定制化的层初始化，包括从layer_param_读入并处理相关的层权值和偏置参数，
+   * 调用Reshape函数申请top blob的存储空间
+   */
+  virtual void LayerSetUp(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {}
+      
+  virtual void Reshape(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) = 0;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;前向传播函数Forward和反向传播函数Backward。这两个函数非虚函数，它们内部会调用如下虚函数完成数据前向传递和误差反向传播，根据执行环境的不同每个子类Layer必须重写CPU和GPU版本&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  /** @brief Using the CPU device, compute the layer output. */
+  virtual void Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) = 0;
+  /**
+   * @brief Using the GPU device, compute the layer output.
+   *        Fall back to Forward_cpu() if unavailable.
+   */
+  virtual void Forward_gpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
+    // LOG(WARNING) &amp;lt;&amp;lt; &quot;Using CPU code as backup.&quot;;
+    return Forward_cpu(bottom, top);
+  }
+
+  /**
+   * @brief Using the CPU device, compute the gradients for any parameters and
+   *        for the bottom blobs if propagate_down is true.
+   */
+  virtual void Backward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top,
+      const vector&amp;lt;bool&amp;gt;&amp;amp; propagate_down,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom) = 0;
+  /**
+   * @brief Using the GPU device, compute the gradients for any parameters and
+   *        for the bottom blobs if propagate_down is true.
+   *        Fall back to Backward_cpu() if unavailable.
+   */
+  virtual void Backward_gpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top,
+      const vector&amp;lt;bool&amp;gt;&amp;amp; propagate_down,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom) {
+    // LOG(WARNING) &amp;lt;&amp;lt; &quot;Using CPU code as backup.&quot;;
+    Backward_cpu(top, propagate_down, bottom);
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个函数被setup调用，主要是check bottom和top 的blob是否match，这里面用了上面提到的&lt;code&gt;ExactBottomBlobs()&lt;/code&gt;等函数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;virtual void CheckBlobCounts(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom, const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;SetLoss&lt;/code&gt;是非常重要的一个步骤，是被&lt;code&gt;SetUp&lt;/code&gt;调用来初始化top bottom的weights，并且存储非零的loss weights 在diff blob里面&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;inline void SetLossWeights(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;data-layer&quot;&gt;Data Layer&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;data_layer&lt;/code&gt;应该是网络的最底层，主要是将数据送给blob进入到net中，在data_layer中存在多个跟&lt;code&gt;data_layer&lt;/code&gt;相关的类&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;BaseDataLayer&lt;/li&gt;
+  &lt;li&gt;BasePrefetchingDataLayer&lt;/li&gt;
+  &lt;li&gt;DataLayer&lt;/li&gt;
+  &lt;li&gt;DummyDataLayer&lt;/li&gt;
+  &lt;li&gt;HDF5DataLayer&lt;/li&gt;
+  &lt;li&gt;HDF5OutputLayer&lt;/li&gt;
+  &lt;li&gt;ImageDataLayer&lt;/li&gt;
+  &lt;li&gt;MemoryDataLayer&lt;/li&gt;
+  &lt;li&gt;WindowDataLayer&lt;/li&gt;
+  &lt;li&gt;Batch&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;首先Layer是基类，这个之前就已经提到过了。其次看HDF5相关的类有两个，一个是HDF5DataLayer，另一个是HDF5OutputLayer，主要是基于HDF5数据格式的读取和存储&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Data_layer&lt;/code&gt;头文件如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;string&amp;gt;
+#include &amp;lt;utility&amp;gt;
+#include &amp;lt;vector&amp;gt;
+#include &quot;hdf5.h&quot;
+
+#include &quot;caffe/blob.hpp&quot;
+#include &quot;caffe/common.hpp&quot;
+#include &quot;caffe/data_reader.hpp&quot;
+#include &quot;caffe/data_transformer.hpp&quot;
+#include &quot;caffe/filler.hpp&quot;
+#include &quot;caffe/internal_thread.hpp&quot;
+#include &quot;caffe/layer.hpp&quot;
+#include &quot;caffe/proto/caffe.pb.h&quot;
+#include &quot;caffe/util/blocking_queue.hpp&quot;
+#include &quot;caffe/util/db.hpp&quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;还有几个跟data相关的头文件比如data_read.hpp,data_transformer.hpp
+其中data_reader主要是负责数据的读取，传送到data layer中。并且对于每一个source，都会开一一起独立的reading thread读取线程，几十有多个solver在并行的跑。比如在多GPU训练的时候，可以保证对于数据库的读取是顺序的。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;data_transformer.hpp&lt;/code&gt;里面的&lt;code&gt;DataTransformer&lt;/code&gt;这个类，这个类我们要关注一下，这个类主要能对input data 执一些预处理操作，比如缩放、镜像、减去均值。同时还支持一些随机的操作。&lt;/p&gt;
+
+&lt;p&gt;其核心的函数如下，这里总共有5个常见的Transform函数，其中所有函数的第二部分是相同的，都是一个目标blob，而输入根据输入的情况可以有所选择，可以是blob,也可以是opencv的mat 结构，或者proto中定义的datum结构。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void Transform(const Datum&amp;amp; datum, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
+void Transform(const vector&amp;lt;Datum&amp;gt; &amp;amp; datum_vector, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
+void Transform(const vector&amp;lt;cv::Mat&amp;gt; &amp;amp; mat_vector, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
+void Transform(const cv::Mat&amp;amp; cv_img, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
+void Transform(Blob&amp;lt;Dtype&amp;gt;* input_blob, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;TransformationParameter&lt;/code&gt;是该类构造器中需要传入的一些变形参数，相关的操作定义在proto中，摘录如下,可以看到总共有sacle, mirror, crop_size, mean_file, mean_value, force_color, force_grey 共7个相关操作。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;message TransformationParameter {
+  optional float scale = 1 [default = 1];
+  optional bool mirror = 2 [default = false];
+  optional uint32 crop_size = 3 [default = 0];
+  optional string mean_file = 4;
+  repeated float mean_value = 5;
+  optional bool force_color = 6 [default = false];
+  optional bool force_gray = 7 [default = false];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最重要的就是类内的&lt;code&gt;layerSetup&lt;/code&gt;.首先我们来看DataLayer的&lt;code&gt;DataLayerSetUp&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void DataLayer&amp;lt;Dtype&amp;gt;::DataLayerSetUp(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
+  const int batch_size = this-&amp;gt;layer_param_.data_param().batch_size();
+  //获得相应的datum，用来初始化top blob
+  Datum&amp;amp; datum = *(reader_.full().peek());
+  //使用data_transformer 来计算根据datum的期望blob的shape
+  vector&amp;lt;int&amp;gt; top_shape = this-&amp;gt;data_transformer_-&amp;gt;InferBlobShape(datum);
+  this-&amp;gt;transformed_data_.Reshape(top_shape);
+  //首先reshape top[0]，再根据batch的大小进行预取
+  top_shape[0] = batch_size;
+  top[0]-&amp;gt;Reshape(top_shape);
+  for (int i = 0; i &amp;lt; this-&amp;gt;PREFETCH_COUNT; ++i) {
+    this-&amp;gt;prefetch_[i].data_.Reshape(top_shape);
+  }
+  LOG(INFO) &amp;lt;&amp;lt; &quot;output data size: &quot; &amp;lt;&amp;lt; top[0]-&amp;gt;num() &amp;lt;&amp;lt; &quot;,&quot;
+      &amp;lt;&amp;lt; top[0]-&amp;gt;channels() &amp;lt;&amp;lt; &quot;,&quot; &amp;lt;&amp;lt; top[0]-&amp;gt;height() &amp;lt;&amp;lt; &quot;,&quot;
+      &amp;lt;&amp;lt; top[0]-&amp;gt;width();
+  // 同样reshape label的blob的shape
+  if (this-&amp;gt;output_labels_) {
+    vector&amp;lt;int&amp;gt; label_shape(1, batch_size);
+    top[1]-&amp;gt;Reshape(label_shape);
+    for (int i = 0; i &amp;lt; this-&amp;gt;PREFETCH_COUNT; ++i) {
+      this-&amp;gt;prefetch_[i].label_.Reshape(label_shape);
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;还有很多其他的&lt;code&gt;Data_Layer&lt;/code&gt;的初始化，可以参考：&lt;a href=&quot;http://www.cnblogs.com/louyihang-loves-baiyan/p/5153155.html&quot;&gt;Caffe源码解析4：Data_layer&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;conv-layer&quot;&gt;Conv Layer&lt;/h2&gt;
+&lt;p&gt;这里先引用一个其他博客里总结的Conv Layer的类关系图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/conv_layer_structure.jpg&quot; alt=&quot;Conv Layer&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;BaseConvolutionLayer&lt;/code&gt;&lt;/strong&gt;
+其继承自Layer，是一个卷积以及反卷积操作的基类，首先我们来看BaseConvolutionLayer的LayerSetUp函数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void BaseConvolutionLayer&amp;lt;Dtype&amp;gt;::LayerSetUp(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top)
+  //首先这里主要是在配置卷积kernel 的size,padding,stride以及inputs
+  ConvolutionParameter conv_param = this-&amp;gt;layer_param_.convolution_param();
+  force_nd_im2col_ = conv_param.force_nd_im2col();
+  channel_axis_ = bottom[0]-&amp;gt;CanonicalAxisIndex(conv_param.axis());
+  const int first_spatial_axis = channel_axis_ + 1;
+  const int num_axes = bottom[0]-&amp;gt;num_axes();
+  num_spatial_axes_ = num_axes - first_spatial_axis;
+  CHECK_GE(num_spatial_axes_, 0);
+  vector&amp;lt;int&amp;gt; bottom_dim_blob_shape(1, num_spatial_axes_ + 1);
+  vector&amp;lt;int&amp;gt; spatial_dim_blob_shape(1, std::max(num_spatial_axes_, 1));
+  // 设置kernel的dimensions
+  kernel_shape_.Reshape(spatial_dim_blob_shape);
+  int* kernel_shape_data = kernel_shape_.mutable_cpu_data();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接着是设置相应的stride dimensions，对于2D，设置在h和w方向上的stride，对于kernel的pad也做相应设置&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pad_.Reshape(spatial_dim_blob_shape);
+int* pad_data = pad_.mutable_cpu_data();
+pad_data[0] = conv_param.pad_h();
+pad_data[1] = conv_param.pad_w();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接下来是对&lt;code&gt;widths&lt;/code&gt; 和 &lt;code&gt;bias&lt;/code&gt; 做设置和填充，其中blob[0]里面存放的是filter weights,而blob[1]里面存放的是biases，当然bias是可选的，也可以没有&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//设置相应的shape，并检查
+vector&amp;lt;int&amp;gt; weight_shape(2);
+weight_shape[0] = conv_out_channels_;
+weight_shape[1] = conv_in_channels_ / group_;
+
+bias_term_ = this-&amp;gt;layer_param_.convolution_param().bias_term();
+vector&amp;lt;int&amp;gt; bias_shape(bias_term_, num_output_);
+
+//填充权重
+this-&amp;gt;blobs_[0].reset(new Blob&amp;lt;Dtype&amp;gt;(weight_shape));
+shared_ptr&amp;lt;Filler&amp;lt;Dtype&amp;gt; &amp;gt; weight_filler(GetFiller&amp;lt;Dtype&amp;gt;(
+    this-&amp;gt;layer_param_.convolution_param().weight_filler()));
+weight_filler-&amp;gt;Fill(this-&amp;gt;blobs_[0].get());
+//填充偏置项
+if (bias_term_) {
+  this-&amp;gt;blobs_[1].reset(new Blob&amp;lt;Dtype&amp;gt;(bias_shape));
+  shared_ptr&amp;lt;Filler&amp;lt;Dtype&amp;gt; &amp;gt; bias_filler(GetFiller&amp;lt;Dtype&amp;gt;(
+      this-&amp;gt;layer_param_.convolution_param().bias_filler()));
+  bias_filler-&amp;gt;Fill(this-&amp;gt;blobs_[1].get());
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;ConvolutionLayer&lt;/code&gt;&lt;/strong&gt; 继承了&lt;code&gt;BaseConvolutionLayer&lt;/code&gt;，主要作用就是将一副image做卷积操作，使用学到的filter的参数和biaes。同时在Caffe里面，卷积操作做了优化，变成了一个矩阵相乘的操作。其中有两个比较主要的函数是&lt;code&gt;im2col&lt;/code&gt;以及&lt;code&gt;col2im&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;图中上半部分是一个传统卷积，下图是一个矩阵相乘的版本。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/two_conv_type.png&quot; alt=&quot;Two Types of Conv&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;下图是在一个卷积层中将卷积操作展开的具体操作过程，他里面按照卷积核的大小取数据然后展开，在同一张图里的不同卷积核选取的逐行摆放，不同N的话，就在同一行后面继续拼接，不同个可以是多个通道，但是需要注意的是同一行里面每一段都应该对应的是原图中中一个位置的卷积窗口。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/conv_cal.png&quot; alt=&quot;Calculate Conv&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;对于卷积层中的卷积操作，还有一个group的概念要说明一下，groups是代表filter 组的个数。引入gruop主要是为了选择性的连接卷积层的输入端和输出端的channels，否则参数会太多。每一个group 和1/group的input 通道和 1/group 的output通道进行卷积操作。比如有4个input， 8个output，那么1-4属于第一组，5-8属于第二个gruop。&lt;/p&gt;
+
+&lt;p&gt;ConvolutionLayer里面，主要重写了Forward_cpu和Backward_cpu&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void ConvolutionLayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
+  const Dtype* weight = this-&amp;gt;blobs_[0]-&amp;gt;cpu_data();
+  for (int i = 0; i &amp;lt; bottom.size(); ++i) {
+    const Dtype* bottom_data = bottom[i]-&amp;gt;cpu_data();
+    Dtype* top_data = top[i]-&amp;gt;mutable_cpu_data();
+    for (int n = 0; n &amp;lt; this-&amp;gt;num_; ++n) {
+      this-&amp;gt;forward_cpu_gemm(bottom_data + n * this-&amp;gt;bottom_dim_, weight,
+          top_data + n * this-&amp;gt;top_dim_);
+      if (this-&amp;gt;bias_term_) {
+        const Dtype* bias = this-&amp;gt;blobs_[1]-&amp;gt;cpu_data();
+        this-&amp;gt;forward_cpu_bias(top_data + n * this-&amp;gt;top_dim_, bias);
+      }
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到其实这里面他调用了forward_cpu_gemm，而这个函数内部又调用了math_function里面的caffe_cpu_gemm的通用矩阵相乘接口，GEMM的全称是General Matrix Matrix Multiply。其基本形式如下：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;C=alpha∗op(A)∗op(B)+beta∗C,&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+void ConvolutionLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top,
+      const vector&amp;lt;bool&amp;gt;&amp;amp; propagate_down, const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom) {
+   //反向传播梯度误差
+  const Dtype* weight = this-&amp;gt;blobs_[0]-&amp;gt;cpu_data();
+  Dtype* weight_diff = this-&amp;gt;blobs_[0]-&amp;gt;mutable_cpu_diff();
+  for (int i = 0; i &amp;lt; top.size(); ++i) {
+    const Dtype* top_diff = top[i]-&amp;gt;cpu_diff();
+    const Dtype* bottom_data = bottom[i]-&amp;gt;cpu_data();
+    Dtype* bottom_diff = bottom[i]-&amp;gt;mutable_cpu_diff();
+    
+    //如果有bias项，计算Bias导数
+    if (this-&amp;gt;bias_term_ &amp;amp;&amp;amp; this-&amp;gt;param_propagate_down_[1]) {
+      Dtype* bias_diff = this-&amp;gt;blobs_[1]-&amp;gt;mutable_cpu_diff();
+      for (int n = 0; n &amp;lt; this-&amp;gt;num_; ++n) {
+        this-&amp;gt;backward_cpu_bias(bias_diff, top_diff + n * this-&amp;gt;top_dim_);
+      }
+    }
+    //计算weight
+    if (this-&amp;gt;param_propagate_down_[0] || propagate_down[i]) {
+      for (int n = 0; n &amp;lt; this-&amp;gt;num_; ++n) {
+        // 计算weights权重的梯度
+        if (this-&amp;gt;param_propagate_down_[0]) {
+          this-&amp;gt;weight_cpu_gemm(bottom_data + n * this-&amp;gt;bottom_dim_,
+              top_diff + n * this-&amp;gt;top_dim_, weight_diff);
+        }
+        //计算botttom数据的梯度，向后传递
+        if (propagate_down[i]) {
+          this-&amp;gt;backward_cpu_gemm(top_diff + n * this-&amp;gt;top_dim_, weight,
+              bottom_diff + n * this-&amp;gt;bottom_dim_);
+        }
+      }
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;neuron-layer&quot;&gt;Neuron Layer&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Neuron Layer&lt;/code&gt;，顾名思义这里就是神经元，激活函数的相应层。我们知道在blob进入激活函数之前和之后他的size是不会变的，而且激活值也就是输出 y 只依赖于相应的输入 x 。在Caffe里面所有的layer的实现都放在src文件夹下的layer文件夹中，基本上很多文章里应用到的layer类型它都有cpu和cuda的实现。&lt;/p&gt;
+
+&lt;p&gt;在caffe里面NeuronLayer比较多，在此罗列了一下&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;AbsValLayer&lt;/li&gt;
+  &lt;li&gt;BNLLLayer&lt;/li&gt;
+  &lt;li&gt;DropoutLayer&lt;/li&gt;
+  &lt;li&gt;ExpLayer&lt;/li&gt;
+  &lt;li&gt;LogLayer&lt;/li&gt;
+  &lt;li&gt;PowerLayer&lt;/li&gt;
+  &lt;li&gt;ReLULayer&lt;/li&gt;
+  &lt;li&gt;CuDNNReLULayer&lt;/li&gt;
+  &lt;li&gt;SigmoidLayer&lt;/li&gt;
+  &lt;li&gt;CuDNNSigmoidLayer&lt;/li&gt;
+  &lt;li&gt;TanHLayer&lt;/li&gt;
+  &lt;li&gt;CuDNNTanHLayer&lt;/li&gt;
+  &lt;li&gt;ThresholdLayer&lt;/li&gt;
+  &lt;li&gt;PReLULayer&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;relulayer&quot;&gt;ReLULayer&lt;/h3&gt;
+&lt;p&gt;目前在激活层的函数中使用ReLU是非常普遍的，一般我们在看资料或者讲义中总是提到的是Sigmoid函数，它比Sigmoid有更快的收敛性，因为sigmoid在收敛的时候越靠近目标点收敛的速度会越慢，也是其函数的曲线形状决定的。而&lt;code&gt;ReLULayer&lt;/code&gt;则相对收敛更快，具体可以看Krizhevsky 12年的那篇ImageNet CNN文章有更详细的介绍。&lt;/p&gt;
+
+&lt;p&gt;其在cafffe中的forward和backward函数为&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+void ReLULayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+    const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
+  const Dtype* bottom_data = bottom[0]-&amp;gt;cpu_data();
+  Dtype* top_data = top[0]-&amp;gt;mutable_cpu_data();
+  const int count = bottom[0]-&amp;gt;count();
+  Dtype negative_slope = this-&amp;gt;layer_param_.relu_param().negative_slope();
+  for (int i = 0; i &amp;lt; count; ++i) {
+    top_data[i] = std::max(bottom_data[i], Dtype(0))
+        + negative_slope * std::min(bottom_data[i], Dtype(0));
+  }
+}
+
+template &amp;lt;typename Dtype&amp;gt;
+void ReLULayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top,
+    const vector&amp;lt;bool&amp;gt;&amp;amp; propagate_down,
+    const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom) {
+  if (propagate_down[0]) {
+    const Dtype* bottom_data = bottom[0]-&amp;gt;cpu_data();
+    const Dtype* top_diff = top[0]-&amp;gt;cpu_diff();
+    Dtype* bottom_diff = bottom[0]-&amp;gt;mutable_cpu_diff();
+    const int count = bottom[0]-&amp;gt;count();
+    Dtype negative_slope = this-&amp;gt;layer_param_.relu_param().negative_slope();
+    for (int i = 0; i &amp;lt; count; ++i) {
+      bottom_diff[i] = top_diff[i] * ((bottom_data[i] &amp;gt; 0)
+          + negative_slope * (bottom_data[i] &amp;lt;= 0));
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其余包括Sigmoid可以参考&lt;a href=&quot;http://www.cnblogs.com/louyihang-loves-baiyan/p/5200850.html&quot;&gt;Caffe源码解析6：Neuron_Layer&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;dropout-layer&quot;&gt;Dropout Layer&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;Dropout Layer&lt;/code&gt;现在是非常常用的一种网络层，只用在训练阶段，一般用在网络的全连接层中，可以减少网络的过拟合问题。其思想是在训练过程中随机的将一部分输入x之置为0。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/dropout_formula.png&quot; alt=&quot;Dropout Formula&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其forward_cpu和backward_cpu为:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+void DropoutLayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+    const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
+  const Dtype* bottom_data = bottom[0]-&amp;gt;cpu_data();
+  Dtype* top_data = top[0]-&amp;gt;mutable_cpu_data();
+  unsigned int* mask = rand_vec_.mutable_cpu_data();
+  const int count = bottom[0]-&amp;gt;count();
+  if (this-&amp;gt;phase_ == TRAIN) {
+    // Create random numbers构造随机数，这里是通过向量掩码来和bottom的数据相乘，scale_是控制undropped的比例
+    caffe_rng_bernoulli(count, 1. - threshold_, mask);
+    for (int i = 0; i &amp;lt; count; ++i) {
+      top_data[i] = bottom_data[i] * mask[i] * scale_;
+    }
+  } else {
+    caffe_copy(bottom[0]-&amp;gt;count(), bottom_data, top_data);
+  }
+}
+
+template &amp;lt;typename Dtype&amp;gt;
+void DropoutLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top,
+    const vector&amp;lt;bool&amp;gt;&amp;amp; propagate_down,
+    const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom) {
+  if (propagate_down[0]) {
+    const Dtype* top_diff = top[0]-&amp;gt;cpu_diff();
+    Dtype* bottom_diff = bottom[0]-&amp;gt;mutable_cpu_diff();
+    if (this-&amp;gt;phase_ == TRAIN) {
+      const unsigned int* mask = rand_vec_.cpu_data();
+      const int count = bottom[0]-&amp;gt;count();
+      for (int i = 0; i &amp;lt; count; ++i) {
+        bottom_diff[i] = top_diff[i] * mask[i] * scale_;
+      }
+    } else {
+      caffe_copy(top[0]-&amp;gt;count(), top_diff, bottom_diff);
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;polling-layer&quot;&gt;Polling Layer&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;Pooling&lt;/code&gt;层一般在网络中是跟在Conv卷积层之后，做采样操作，其实是为了进一步缩小feature map，同时也能增大神经元的视野。在Caffe中，pooling层属于vision_layer的一部分，其相关的定义也在vision_layer.hpp的头文件中。Pooling层的相关操作比较少，在Caffe的自带模式下只有Max pooling和Average poooling两种&lt;/p&gt;
+
+&lt;p&gt;caffe中Pooling的操作相对比较少，结构也简单，首先看它的Forward_cpu函数，在forward的时候根据相应的Pooling_method选择相应的pooling方法&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void PoolingLayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+      const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
+  const Dtype* bottom_data = bottom[0]-&amp;gt;cpu_data();
+  Dtype* top_data = top[0]-&amp;gt;mutable_cpu_data();
+  const int top_count = top[0]-&amp;gt;count();
+  //将mask信息输出到top[1],如果top大于1
+  const bool use_top_mask = top.size() &amp;gt; 1;
+  int* mask = NULL;  // suppress warnings about uninitalized variables
+  Dtype* top_mask = NULL;
+  switch (this-&amp;gt;layer_param_.pooling_param().pool()) {
+  case PoolingParameter_PoolMethod_MAX://这里的case主要是实现max pooling的方法
+    // Initialize
+    if (use_top_mask) {
+      top_mask = top[1]-&amp;gt;mutable_cpu_data();
+      caffe_set(top_count, Dtype(-1), top_mask);
+    } else {
+      mask = max_idx_.mutable_cpu_data();
+      caffe_set(top_count, -1, mask);
+    }
+    caffe_set(top_count, Dtype(-FLT_MAX), top_data);
+    // The main loop
+    for (int n = 0; n &amp;lt; bottom[0]-&amp;gt;num(); ++n) {
+      for (int c = 0; c &amp;lt; channels_; ++c) {
+        for (int ph = 0; ph &amp;lt; pooled_height_; ++ph) {
+          for (int pw = 0; pw &amp;lt; pooled_width_; ++pw) {
+            int hstart = ph * stride_h_ - pad_h_;//这里的hstart，wstart,hend,wend指的是pooling窗口在特征图中的坐标，对应左上右下即x1 y1 x2 y2
+            int wstart = pw * stride_w_ - pad_w_;
+            int hend = min(hstart + kernel_h_, height_);
+            int wend = min(wstart + kernel_w_, width_);
+            hstart = max(hstart, 0);
+            wstart = max(wstart, 0);
+            const int pool_index = ph * pooled_width_ + pw;
+            for (int h = hstart; h &amp;lt; hend; ++h) {
+              for (int w = wstart; w &amp;lt; wend; ++w) {
+                const int index = h * width_ + w;//记录index偏差
+                if (bottom_data[index] &amp;gt; top_data[pool_index]) {//不停迭代
+                  top_data[pool_index] = bottom_data[index];
+                  if (use_top_mask) {
+                    top_mask[pool_index] = static_cast&amp;lt;Dtype&amp;gt;(index);//记录当前最大值的的坐标索引
+                  } else {
+                    mask[pool_index] = index;
+                  }
+                }
+              }
+            }
+          }
+        }
+        // 计算偏移量，进入下一张图的index起始地址
+        bottom_data += bottom[0]-&amp;gt;offset(0, 1);
+        top_data += top[0]-&amp;gt;offset(0, 1);
+        if (use_top_mask) {
+          top_mask += top[0]-&amp;gt;offset(0, 1);
+        } else {
+          mask += top[0]-&amp;gt;offset(0, 1);
+        }
+      }
+    }
+    break;
+ case PoolingParameter_PoolMethod_AVE://average_pooling
+    for (int i = 0; i &amp;lt; top_count; ++i) {
+      top_data[i] = 0;
+    }
+    // The main loop
+    for (int n = 0; n &amp;lt; bottom[0]-&amp;gt;num(); ++n) {//同样是主循环
+      for (int c = 0; c &amp;lt; channels_; ++c) {
+        for (int ph = 0; ph &amp;lt; pooled_height_; ++ph) {
+          for (int pw = 0; pw &amp;lt; pooled_width_; ++pw) {
+            int hstart = ph * stride_h_ - pad_h_;
+            int wstart = pw * stride_w_ - pad_w_;
+            int hend = min(hstart + kernel_h_, height_ + pad_h_);
+            int wend = min(wstart + kernel_w_, width_ + pad_w_);
+            int pool_size = (hend - hstart) * (wend - wstart);
+            hstart = max(hstart, 0);
+            wstart = max(wstart, 0);
+            hend = min(hend, height_);
+            wend = min(wend, width_);
+            for (int h = hstart; h &amp;lt; hend; ++h) {
+              for (int w = wstart; w &amp;lt; wend; ++w) {
+                top_data[ph * pooled_width_ + pw] +=
+                    bottom_data[h * width_ + w];
+              }
+            }
+            top_data[ph * pooled_width_ + pw] /= pool_size;//获得相应的平均值
+          }
+        }
+        // compute offset同理计算下一个图的起始地址
+        bottom_data += bottom[0]-&amp;gt;offset(0, 1);
+        top_data += top[0]-&amp;gt;offset(0, 1);
+      }
+    }
+    break;
+  case PoolingParameter_PoolMethod_STOCHASTIC:
+    NOT_IMPLEMENTED;
+    break;
+  default:
+    LOG(FATAL) &amp;lt;&amp;lt; &quot;Unknown pooling method.&quot;;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;对于误差的反向传导
+对于pooling层的误差传到，根据下式&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/pooling_formula.png&quot; alt=&quot;Pooling Formula&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这里的Upsample具体可以根据相应的pooling方法来进行上采样，upsample的基本思想也是将误差进行的平摊到各个采样的对应点上。在这里pooling因为是线性的所以h这一项其实是可以省略的。&lt;/p&gt;
+
+&lt;p&gt;具体的计算推导过程请结合&lt;a href=&quot;http://www.cnblogs.com/tornadomeet/p/3468450.html&quot;&gt;http://www.cnblogs.com/tornadomeet/p/3468450.html&lt;/a&gt;有详细的推导过程，结合代码中主循环中的最里项会更清晰的明白&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+void PoolingLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top,
+      const vector&amp;lt;bool&amp;gt;&amp;amp; propagate_down, const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom) {
+  if (!propagate_down[0]) {
+    return;
+  }
+  const Dtype* top_diff = top[0]-&amp;gt;cpu_diff();//首先获得上层top_blob的diff
+  Dtype* bottom_diff = bottom[0]-&amp;gt;mutable_cpu_diff();
+  caffe_set(bottom[0]-&amp;gt;count(), Dtype(0), bottom_diff);
+  // We'll output the mask to top[1] if it's of size &amp;gt;1.
+  const bool use_top_mask = top.size() &amp;gt; 1;
+  const int* mask = NULL;  // suppress warnings about uninitialized variables
+  const Dtype* top_mask = NULL;
+  switch (this-&amp;gt;layer_param_.pooling_param().pool()) {
+  case PoolingParameter_PoolMethod_MAX:
+    // The main loop
+    if (use_top_mask) {
+      top_mask = top[1]-&amp;gt;cpu_data();
+    } else {
+      mask = max_idx_.cpu_data();
+    }
+    for (int n = 0; n &amp;lt; top[0]-&amp;gt;num(); ++n) {
+      for (int c = 0; c &amp;lt; channels_; ++c) {
+        for (int ph = 0; ph &amp;lt; pooled_height_; ++ph) {
+          for (int pw = 0; pw &amp;lt; pooled_width_; ++pw) {
+            const int index = ph * pooled_width_ + pw;
+            const int bottom_index =
+                use_top_mask ? top_mask[index] : mask[index];//根据max pooling记录的mask位置，进行误差反转
+            bottom_diff[bottom_index] += top_diff[index];
+          }
+        }
+        bottom_diff += bottom[0]-&amp;gt;offset(0, 1);
+        top_diff += top[0]-&amp;gt;offset(0, 1);
+        if (use_top_mask) {
+          top_mask += top[0]-&amp;gt;offset(0, 1);
+        } else {
+          mask += top[0]-&amp;gt;offset(0, 1);
+        }
+      }
+    }
+    break;
+  case PoolingParameter_PoolMethod_AVE:
+    // The main loop
+    for (int n = 0; n &amp;lt; top[0]-&amp;gt;num(); ++n) {
+      for (int c = 0; c &amp;lt; channels_; ++c) {
+        for (int ph = 0; ph &amp;lt; pooled_height_; ++ph) {
+          for (int pw = 0; pw &amp;lt; pooled_width_; ++pw) {
+            int hstart = ph * stride_h_ - pad_h_;
+            int wstart = pw * stride_w_ - pad_w_;
+            int hend = min(hstart + kernel_h_, height_ + pad_h_);
+            int wend = min(wstart + kernel_w_, width_ + pad_w_);
+            int pool_size = (hend - hstart) * (wend - wstart);
+            hstart = max(hstart, 0);
+            wstart = max(wstart, 0);
+            hend = min(hend, height_);
+            wend = min(wend, width_);
+            for (int h = hstart; h &amp;lt; hend; ++h) {
+              for (int w = wstart; w &amp;lt; wend; ++w) {
+                bottom_diff[h * width_ + w] +=
+                  top_diff[ph * pooled_width_ + pw] / pool_size;//mean_pooling中，bottom的误差值按pooling窗口中的大小计算，从上一层进行填充后，再除窗口大小
+              }
+            }
+          }
+        }
+        // offset
+        bottom_diff += bottom[0]-&amp;gt;offset(0, 1);
+        top_diff += top[0]-&amp;gt;offset(0, 1);
+      }
+    }
+    break;
+  case PoolingParameter_PoolMethod_STOCHASTIC:
+    NOT_IMPLEMENTED;
+    break;
+  default:
+    LOG(FATAL) &amp;lt;&amp;lt; &quot;Unknown pooling method.&quot;;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">模块学习——Layer</summary></entry><entry><title type="html">Caffe Learning Notes(3)</title><link href="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(3).html" rel="alternate" type="text/html" title="Caffe Learning Notes(3)" /><published>2017-07-04T17:00:00+08:00</published><updated>2017-07-04T17:00:00+08:00</updated><id>http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(3)</id><content type="html" xml:base="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(3).html">&lt;h1 id=&quot;模块学习blob类&quot;&gt;模块学习——Blob类&lt;/h1&gt;
+
+&lt;p&gt;主要参考自 &lt;a href=&quot;http://www.cnblogs.com/louyihang-loves-baiyan/&quot;&gt;楼燚(yì)航的blog——Caffe源码解析1：Blob&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;下面会对具体的代码进行分析，但是如果对整体代码有想参考的部分，可以参考另外一篇博客：&lt;a href=&quot;http://blog.csdn.net/xizero00/article/details/50886829&quot;&gt;caffe 中 BLOB的实现
+&lt;/a&gt;，其中对整个代码部分进行了注释，可以参考学习。&lt;/p&gt;
+
+&lt;p&gt;首先提一下&lt;code&gt;explicit&lt;/code&gt;关键字的作用是禁止单参数构造函数的隐式转换。&lt;code&gt;iniline&lt;/code&gt;主要是将代码进行复制，扩充，会使代码总量上升，好处就是可以节省调用的开销，能提高执行效率。&lt;/p&gt;
+
+&lt;p&gt;实际上&lt;code&gt;Blob&lt;/code&gt;包含了三类数据&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;data，前向传播所用到的数据&lt;/li&gt;
+  &lt;li&gt;diff，反向传播所用到的数据&lt;/li&gt;
+  &lt;li&gt;shape，解释data和diff的shape数据&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;主要变量&quot;&gt;主要变量&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;shared_ptr&amp;lt;SyncedMemory&amp;gt; data_;
+shared_ptr&amp;lt;SyncedMemory&amp;gt; diff_;
+shared_ptr&amp;lt;SyncedMemory&amp;gt; shape_data_;
+vector&amp;lt;int&amp;gt; shape_;
+int count_;
+int capacity_;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Blob只是一个基本的数据结构，因此内部的变量相对较少，首先是 &lt;code&gt;data_&lt;/code&gt; 指针，指针类型是 &lt;code&gt;shared_ptr&lt;/code&gt; ，属于 &lt;code&gt;boost&lt;/code&gt; 库的一个智能指针，这一部分主要用来申请内存存储 &lt;code&gt;data&lt;/code&gt; ， &lt;code&gt;data&lt;/code&gt; 主要是正向传播的时候用的。同理， &lt;code&gt;diff_&lt;/code&gt; 主要用来存储偏差，update data ， &lt;code&gt;shape_data&lt;/code&gt; 和 &lt;code&gt;shape_&lt;/code&gt; 都是存储Blob的形状，一个是老版本一个是新版本。 &lt;code&gt;count&lt;/code&gt; 表示Blob中的元素个数，也就是 &lt;code&gt;个数*通道数*高度*宽度&lt;/code&gt; , &lt;code&gt;capacity&lt;/code&gt; 表示当前的元素个数，因为&lt;code&gt;Blob&lt;/code&gt;可能会reshape。&lt;/p&gt;
+
+&lt;h2 id=&quot;主要函数&quot;&gt;主要函数&lt;/h2&gt;
+&lt;h3 id=&quot;reshape&quot;&gt;Reshape()&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;  void Reshape(const int num, const int channels, const int height, const int width);
+  void Reshape(const vector&amp;lt;int&amp;gt;&amp;amp; shape);
+  void Reshape(const BlobShape&amp;amp; shape);
+  void ReshapeLike(const Blob&amp;amp; other);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Blob中除了基础的构造函数，还有大量的 &lt;code&gt;Reshape&lt;/code&gt; 函数， &lt;code&gt;Reshape&lt;/code&gt; 函数在Layer中的 &lt;code&gt;reshape&lt;/code&gt; 或者 &lt;code&gt;forward&lt;/code&gt; 操作中来adjust dimension。同时在改变&lt;code&gt;Blob&lt;/code&gt;大小时，内存将会被重新分配，如果内存大小不够了，并且额外的内存将不会被释放。对input的blob进行reshape,如果立马调用 &lt;code&gt;Net::Backward&lt;/code&gt; 是会出错的，因为reshape之后，要么 &lt;code&gt;Net::forward&lt;/code&gt; 或者 &lt;code&gt;Net::Reshape&lt;/code&gt; 就会被调用来将新的input shape传播到高层。&lt;/p&gt;
+
+&lt;h3 id=&quot;count&quot;&gt;count()&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;inline int shape(int index) const {
+    return shape_[CanonicalAxisIndex(index)];
+  }
+  inline int num_axes() const { return shape_.size(); }
+  inline int count() const { return count_; }
+  inline int count(int start_axis, int end_axis) const {
+    ...
+  }
+  inline int count(int start_axis) const {
+    return count(start_axis, num_axes());
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Blob类里面有重载很多个count()函数，主要还是为了统计Blob的容量（volume），或者是某一片（slice），从某个axis到具体某个axis的shape乘积。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;并且Blob的Index是可以从负坐标开始读的，这一点跟Python好像&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;对于Blob中的4个基本变量 &lt;code&gt;num, channel, height, width&lt;/code&gt; 可以直接通过shape(0),shape(1),shape(2),shape(3)来访问。&lt;/p&gt;
+
+&lt;h3 id=&quot;data--diff&quot;&gt;Data &amp;amp; Diff&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;inline Dtype data_at(const int n, const int c, const int h, const int w)
+inline Dtype diff_at(const int n, const int c, const int h, const int w)
+inline Dtype data_at(const vector&amp;lt;int&amp;gt;&amp;amp; index)
+inline Dtype diff_at(const vector&amp;lt;int&amp;gt;&amp;amp; index)
+inline const shared_ptr&amp;lt;SyncedMemory&amp;gt;&amp;amp; data()
+inline const shared_ptr&amp;lt;SyncedMemory&amp;gt;&amp;amp; diff()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这一部分函数主要通过给定的位置访问数据，根据位置计算与数据起始的偏差offset，在通过cpu_data*指针获得地址。下面几个函数都是获得&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const Dtype* cpu_data() const;
+void set_cpu_data(Dtype* data);
+const int* gpu_shape() const;
+const Dtype* gpu_data() const;
+const Dtype* cpu_diff() const;
+const Dtype* gpu_diff() const;
+Dtype* mutable_cpu_data();
+Dtype* mutable_gpu_data();
+Dtype* mutable_cpu_diff();
+Dtype* mutable_gpu_diff();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;可以看到这里有data和diff两类数据，&lt;strong&gt;而这个diff就是我们所熟知的偏差，前者主要存储前向传递的数据，而后者存储的是反向传播中的梯度&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;update&quot;&gt;Update()&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;void Blob&amp;lt;Dtype&amp;gt;::Update() {
+  // We will perform update based on where the data is located.
+  switch (data_-&amp;gt;head()) {
+  case SyncedMemory::HEAD_AT_CPU:
+    // perform computation on CPU
+    caffe_axpy&amp;lt;Dtype&amp;gt;(count_, Dtype(-1),
+        static_cast&amp;lt;const Dtype*&amp;gt;(diff_-&amp;gt;cpu_data()),
+        static_cast&amp;lt;Dtype*&amp;gt;(data_-&amp;gt;mutable_cpu_data()));
+    break;
+  case SyncedMemory::HEAD_AT_GPU:
+  case SyncedMemory::SYNCED:
+#ifndef CPU_ONLY
+    // perform computation on GPU
+    caffe_gpu_axpy&amp;lt;Dtype&amp;gt;(count_, Dtype(-1),
+        static_cast&amp;lt;const Dtype*&amp;gt;(diff_-&amp;gt;gpu_data()),
+        static_cast&amp;lt;Dtype*&amp;gt;(data_-&amp;gt;mutable_gpu_data()));
+#else
+    NO_GPU;
+#endif
+    break;
+  default:
+    LOG(FATAL) &amp;lt;&amp;lt; &quot;Syncedmem not initialized.&quot;;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个里面核心的一句话就是&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;caffe_axpy&amp;lt;Dtype&amp;gt;(count_, Dtype(-1),
+        static_cast&amp;lt;const Dtype*&amp;gt;(diff_-&amp;gt;cpu_data()),
+        static_cast&amp;lt;Dtype*&amp;gt;(data_-&amp;gt;mutable_cpu_data()));  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这句话是在 &lt;code&gt;include/caffe/util/math_function.cpp&lt;/code&gt; 文件中&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void caffe_axpy&amp;lt;float&amp;gt;(const int N, const float alpha, const float* X,
+    float* Y) { cblas_saxpy(N, alpha, X, 1, Y, 1); }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;可以看到这一段调用了cblas库的方法&lt;/strong&gt;。实现的功能是&lt;/p&gt;
+
+&lt;center&gt;
+Y=alpha∗X+beta∗Y
+&lt;/center&gt;
+
+&lt;p&gt;也就是blob里面的data部分减去diff部分&lt;/p&gt;
+
+&lt;h3 id=&quot;norm&quot;&gt;norm&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;Dtype asum_data() const;//计算data的L1范数
+Dtype asum_diff() const;//计算diff的L1范数
+Dtype sumsq_data() const;//计算data的L2范数
+Dtype sumsq_diff() const;//计算diff的L2范数
+void scale_data(Dtype scale_factor);//将data部分乘以一个因子
+void scale_diff(Dtype scale_factor);//将diff部分乘一个因子
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&quot;模块学习syncedmemory&quot;&gt;模块学习——SyncedMemory&lt;/h1&gt;
+&lt;p&gt;看到SyncedMem就知道，这是在做内存同步的操作。这类个类的代码比较少，但是作用是非常明显的。文件对应着syncedmem.hpp,着syncedmem.cpp&lt;/p&gt;
+
+&lt;p&gt;首先是两个全局的内联函数。如果机器是支持GPU的并且安装了cuda，通过cudaMallocHost分配的host memory将会被pinned，&lt;strong&gt;这里我谷歌了一下，pinned的意思就是内存不会被paged out，我们知道内存里面是由页作为基本的管理单元。分配的内存可以常驻在内存空间中对效率是有帮助的，空间不会被别的进程所抢占。&lt;/strong&gt;同样如果内存越大，能被分配的Pinned内存自然也越大。&lt;strong&gt;还有一点是，对于单一的GPU而言提升并不会太显著，但是对于多个GPU的并行而言可以显著提高稳定性。&lt;/strong&gt; [1]&lt;/p&gt;
+
+&lt;h2 id=&quot;inference&quot;&gt;Inference&lt;/h2&gt;
+&lt;p&gt;[1] http://www.cnblogs.com/louyihang-loves-baiyan/p/5150554.html&lt;/p&gt;</content><author><name></name></author><summary type="html">模块学习——Blob类</summary></entry><entry><title type="html">Caffe Learning Notes(2)</title><link href="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(2).html" rel="alternate" type="text/html" title="Caffe Learning Notes(2)" /><published>2017-07-04T12:00:00+08:00</published><updated>2017-07-04T12:00:00+08:00</updated><id>http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(2)</id><content type="html" xml:base="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(2).html">&lt;h1 id=&quot;模块学习protocol-buffer&quot;&gt;模块学习——Protocol Buffer&lt;/h1&gt;
+&lt;p&gt;除了清晰的代码结构，让Caffe变得易用更应该归功于Google Protocol Buffer的使用。Google Protocol Buffer是Google开发的一个用于serializing结构化数据的开源工具:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Protocol buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Caffe使用这个工具来定义&lt;code&gt;Solver&lt;/code&gt;和&lt;code&gt;Net&lt;/code&gt;，以及&lt;code&gt;Net&lt;/code&gt;中每一个&lt;code&gt;layer&lt;/code&gt;的参数。这使得只是想使用Caffe目前支持的&lt;code&gt;Layer&lt;/code&gt;(已经非常丰富了)来做一些实验或者demo的用户可以不去和代码打交道，只需要在&lt;code&gt;*.prototxt&lt;/code&gt;文件中描述自己的&lt;code&gt;Solver&lt;/code&gt;和&lt;code&gt;Net&lt;/code&gt;即可，再通过Caffe提供的command line interfaces就可以完成模型的train, finetune, test等功能。[1]&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Protocol Buffer的学习&lt;/strong&gt; &lt;a href=&quot;https://developers.google.com/protocol-buffers/docs/cpptutorial#why-use-protocol-buffers&quot;&gt;Protocol Buffer Basics: C++&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;caffe中的应用&quot;&gt;Caffe中的应用&lt;/h3&gt;
+&lt;p&gt;caffe当中的使用可以见 &lt;code&gt;caffe/src/caffe/proto/caffe.proto&lt;/code&gt;&lt;br /&gt;
+Reference: &lt;a href=&quot;http://alanse7en.github.io/caffedai-ma-jie-xi-2/&quot;&gt;Protocol Buffer in Caffe&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;prototxt的编写可以直接参考官方文档，可以参考的地方也很多，编写时也有一个可视化的工具来帮梦，地址入下：
+&lt;a href=&quot;http://ethereon.github.io/netscope/quickstart.html&quot;&gt;Quick Start — Netscope&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;p&gt;[1] http://alanse7en.github.io/caffedai-ma-jie-xi-1/&lt;/p&gt;
+
+&lt;h1 id=&quot;模块学习command-line-interfaces&quot;&gt;模块学习——Command Line Interfaces&lt;/h1&gt;
+&lt;h2 id=&quot;google-flags&quot;&gt;Google Flags&lt;/h2&gt;
+&lt;p&gt;Caffe的Command Line Interfaces一共提供了四个功能：&lt;code&gt;train&lt;/code&gt;, &lt;code&gt;test&lt;/code&gt;, &lt;code&gt;time&lt;/code&gt;, &lt;code&gt;device_query&lt;/code&gt;，而Interfaces的输入除了这四种功能还可以输入诸如&lt;code&gt;-solver&lt;/code&gt;, &lt;code&gt;-weights&lt;/code&gt;, &lt;code&gt;-snapshot&lt;/code&gt;, &lt;code&gt;-gpu&lt;/code&gt;等参数。 &lt;em&gt;这些参数的解析是通过Google Flags这个工具来完成的&lt;/em&gt; 。[1]&lt;/p&gt;
+
+&lt;p&gt;解析这些标志的代码在caffe.cpp中的main()中调用了/CAFFE_ROOT/src/common.cpp中的GlobalInit(&amp;amp;argc, &amp;amp;argv)函数：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void GlobalInit(int* pargc, char*** pargv) {
+  // Google flags.
+  ::gflags::ParseCommandLineFlags(pargc, pargv, true);
+  // Google logging.
+  ::google::InitGoogleLogging(*(pargv)[0]);
+  // Provide a backtrace on segfault.
+  ::google::InstallFailureSignalHandler();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;register-brew-function&quot;&gt;Register Brew Function&lt;/h2&gt;
+&lt;p&gt;Caffe在Command Line Interfaces中一共提供了4种功能:&lt;code&gt;train&lt;/code&gt;/&lt;code&gt;test&lt;/code&gt;/&lt;code&gt;time&lt;/code&gt;/&lt;code&gt;device_query&lt;/code&gt;，分别对应着四个函数，这四个函数的调用是通过一个叫做&lt;code&gt;g_brew_map&lt;/code&gt;的全局变量来完成的：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// A simple registry for caffe commands.
+typedef int (*BrewFunction)();
+typedef std::map&amp;lt;caffe::string, BrewFunction&amp;gt; BrewMap;
+BrewMap g_brew_map;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;g_brew_map&lt;/code&gt;是一个key为&lt;code&gt;string&lt;/code&gt;类型，value为&lt;code&gt;BrewFunction&lt;/code&gt;类型的一个map类型的全局变量，&lt;code&gt;BrewFunction&lt;/code&gt;是一个函数指针类型，指向的是参数为空，返回值为int的函数，也就是&lt;code&gt;train&lt;/code&gt;/&lt;code&gt;test&lt;/code&gt;/&lt;code&gt;time&lt;/code&gt;/&lt;code&gt;device_query&lt;/code&gt;这四个函数的类型。在&lt;code&gt;train&lt;/code&gt;等四个函数实现的后面都紧跟着这样一句宏的调用：RegisterBrewFunction(train);&lt;/p&gt;
+
+&lt;p&gt;总结一下：RegisterBrewFunction这个宏在每一个实现主要功能的函数之后将这个函数的名字和其对应的函数指针添加到了&lt;code&gt;g_brew_map&lt;/code&gt;中，然后在main函数中，通过&lt;code&gt;GetBrewFunction&lt;/code&gt;得到了我们需要调用的那个函数的函数指针，并完成了调用。&lt;/p&gt;
+
+&lt;p&gt;具体可以参考 reference [1] &lt;a href=&quot;http://alanse7en.github.io/caffedai-ma-3/&quot;&gt;Caffe代码解析(3) – Xuesong’s Blog&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;train-函数&quot;&gt;train() 函数&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt; CHECK_GT(FLAGS_solver.size(), 0) &amp;lt;&amp;lt; &quot;Need a solver definition to train.&quot;;
+CHECK(!FLAGS_snapshot.size() || !FLAGS_weights.size())
+    &amp;lt;&amp;lt; &quot;Give a snapshot to resume training or weights to finetune &quot;
+    &quot;but not both.&quot;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这段代码的第一行使用了&lt;code&gt;glog&lt;/code&gt;的&lt;code&gt;CHECK_GT&lt;/code&gt;宏（含义为check greater than），检查&lt;code&gt;FLAGS_solver&lt;/code&gt;的size是否大于0，如果小于或等于0则输出提示：”Need a solver definition to train”。&lt;code&gt;FLAGS_solver&lt;/code&gt;是最开始通过&lt;code&gt;DEFINE_string&lt;/code&gt;定义的标志，如果我们希望训练一个模型，那么自然应该应该提供对应的solver定义文件的路径，这一句话正是在确保我们提供了这样的路径。这样的检查语句在后续的代码中会经常出现，将不再一一详细解释，如果有不清楚含义的&lt;code&gt;glog&lt;/code&gt;宏可以去看看文档。 与第一行代码类似，第二行代码是确保用户没有同时提供 snapshot 和 weights 参数，这两个参数都是继续之前的训练或者进行fine-tuning的，如果同时指明了这两个标志，则不知道到底应该从哪个路径的文件去读入模型的相关参数更为合适。&lt;/p&gt;
+
+&lt;p&gt;然后出现了 &lt;code&gt;SolverParameter solver_param&lt;/code&gt; 的声明和解析的代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;caffe::SolverParameter solver_param;
+caffe::ReadSolverParamsFromTextFileOrDie(FLAGS_solver, &amp;amp;solver_param);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;SolverParameter&lt;/code&gt;是通过Google Protocol Buffer自动生成的一个类，而具体的解析函数将在下一部分具体解释。&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;接下来这一部分的代码是根据用户的设置来选择Caffe工作的模式（GPU或CPU）以及使用哪些GPU(caffe已经支持了多GPU同时工作！具体参考： [Caffe&lt;/td&gt;
+      &lt;td&gt;Interfaces](http://caffe.berkeleyvision.org/tutorial/interfaces.html)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code&gt;  // If the gpus flag is not provided, allow the mode and device to be set
+  // in the solver prototxt.
+  if (FLAGS_gpu.size() == 0
+      &amp;amp;&amp;amp; solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {
+      if (solver_param.has_device_id()) {
+          FLAGS_gpu = &quot;&quot; +
+              boost::lexical_cast&amp;lt;string&amp;gt;(solver_param.device_id());
+      } else {  // Set default GPU if unspecified
+          FLAGS_gpu = &quot;&quot; + boost::lexical_cast&amp;lt;string&amp;gt;(0);
+      }
+  }
+
+  vector&amp;lt;int&amp;gt; gpus;
+  get_gpus(&amp;amp;gpus);
+  if (gpus.size() == 0) {
+    LOG(INFO) &amp;lt;&amp;lt; &quot;Use CPU.&quot;;
+    Caffe::set_mode(Caffe::CPU);
+  } else {
+    ostringstream s;
+    for (int i = 0; i &amp;lt; gpus.size(); ++i) {
+      s &amp;lt;&amp;lt; (i ? &quot;, &quot; : &quot;&quot;) &amp;lt;&amp;lt; gpus[i];
+    }
+    LOG(INFO) &amp;lt;&amp;lt; &quot;Using GPUs &quot; &amp;lt;&amp;lt; s.str();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;首先是判断用户在Command Line中是否输入了gpu相关的参数，如果没有(FLAGS_gpu.size()==0)但是用户在solver的prototxt定义中提供了相关的参数，那就把相关的参数放到FLAGS_gpu中，如果用户仅仅是选择了在solver的prototxt定义中选择了GPU模式，但是没有指明具体的gpu_id，那么就默认设置为0。&lt;/p&gt;
+
+&lt;p&gt;接下来的代码则通过一个get_gpus的函数，将存放在FLAGS_gpu中的string转成了一个vector，并完成了具体的设置。[1]&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;p&gt;[1] http://alanse7en.github.io/caffedai-ma-3/&lt;/p&gt;</content><author><name></name></author><summary type="html">模块学习——Protocol Buffer 除了清晰的代码结构，让Caffe变得易用更应该归功于Google Protocol Buffer的使用。Google Protocol Buffer是Google开发的一个用于serializing结构化数据的开源工具:</summary></entry><entry><title type="html">Caffe Learning Notes(1)</title><link href="http://localhost:4000/caffe/2017/07/03/Caffe-Learning-Notes(1).html" rel="alternate" type="text/html" title="Caffe Learning Notes(1)" /><published>2017-07-03T20:15:00+08:00</published><updated>2017-07-03T20:15:00+08:00</updated><id>http://localhost:4000/caffe/2017/07/03/Caffe-Learning-Notes(1)</id><content type="html" xml:base="http://localhost:4000/caffe/2017/07/03/Caffe-Learning-Notes(1).html">&lt;p&gt;之前一直在学习&lt;em&gt;Transfer Learning&lt;/em&gt;，看到&lt;em&gt;DAN&lt;/em&gt;和&lt;em&gt;RTN&lt;/em&gt;的源代码都是用Caffe写的，所以趁此机会来学习一下Caffe的源代码，为了之后能自己写出来自己的类。&lt;/p&gt;
+
+&lt;p&gt;本文在全局上主要参考&lt;a href=&quot;https://buptldy.github.io/2016/10/09/2016-10-09-Caffe_Code/&quot;&gt;Caffe Source Code Analysis
+&lt;/a&gt;这篇博客。这个里面对整个初始化和训练做了一个比较高层次的简单的介绍，可以通读一下来学习基本过程。&lt;/p&gt;
+
+&lt;p&gt;接下来还主要参考了不同的学习笔记如下：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/xizero00/article/details/50886829&quot;&gt;http://blog.csdn.net/xizero00/article/details/50886829&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/u011104550/article/details/51232667&quot;&gt;http://blog.csdn.net/u011104550/article/details/51232667&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://www.cnblogs.com/louyihang-loves-baiyan/p/5149628.html&quot;&gt;http://www.cnblogs.com/louyihang-loves-baiyan/p/5149628.html&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://alanse7en.github.io/caffedai-ma-jie-xi-1/&quot;&gt;http://alanse7en.github.io/caffedai-ma-jie-xi-1/&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;后文对这些内容进行了总结和归纳。&lt;/p&gt;
+
+&lt;h1 id=&quot;caffe-简介&quot;&gt;Caffe 简介&lt;/h1&gt;
+
+&lt;p&gt;一般在介绍Caffe代码结构的时候，大家都会说Caffe主要由&lt;code&gt;Blob&lt;/code&gt;,&lt;code&gt;Layer&lt;/code&gt;,&lt;code&gt;Net&lt;/code&gt;和&lt;code&gt;Solver&lt;/code&gt;这几个部分组成。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;Blob&lt;/code&gt; 主要用来表示网络中的数据，包括训练数据，网络各层自身的参数(包括权值、偏置以及它们的梯度)，网络之间传递的数据都是通过 &lt;code&gt;Blob&lt;/code&gt; 来实现的，同时 &lt;code&gt;Blob&lt;/code&gt; 数据也支持在 CPU 与 GPU 上存储，能够在两者之间做同步。&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Layer&lt;/code&gt; 是对神经网络中各种层的一个抽象，包括我们熟知的卷积层和下采样层，还有全连接层和各种激活函数层等等。同时每种 &lt;code&gt;Layer&lt;/code&gt; 都实现了前向传播和反向传播，并通过 &lt;code&gt;Blob&lt;/code&gt; 来传递数据。&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Net&lt;/code&gt; 是对整个网络的表示，由各种 &lt;code&gt;Layer&lt;/code&gt; 前后连接组合而成，也是我们所构建的网络模型。&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Solver&lt;/code&gt; 定义了针对 Net 网络模型的求解方法，记录网络的训练过程，保存网络模型参数，中断并恢复网络的训练过程。自定义 &lt;code&gt;Solver&lt;/code&gt; 能够实现不同的网络求解方式。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/caffe_structure.png&quot; alt=&quot;Caffe structures&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;总体学习通过caffe训练lenet来看看网络初始化和训练过程&quot;&gt;总体学习——通过Caffe训练LeNet来看看网络初始化和训练过程&lt;/h2&gt;
+
+&lt;p&gt;在Caffe提供的例子里，训练LeNet网络的命令为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd $CAFFE_ROOT
+./build/tools/caffe train --solver=examples/mnist/lenet_solver.prototxt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中第一个参数&lt;code&gt;build/tools/caffe&lt;/code&gt;是Caffe框架的主要框架，由&lt;code&gt;tools/caffe.cpp&lt;/code&gt;文件编译而来，第二个参数&lt;code&gt;train&lt;/code&gt;表示是要训练网络，第三个参数是 &lt;code&gt;solver&lt;/code&gt; 的 &lt;code&gt;protobuf&lt;/code&gt; 描述文件。在Caffe中，网络模型的描述及其求解都是通过 &lt;code&gt;protobuf&lt;/code&gt; 定义的，并不需要通过敲代码来实现。同时，模型的参数也是通过 &lt;code&gt;protobuf&lt;/code&gt; 实现加载和存储，包括 CPU 与 GPU 之间的无缝切换，都是通过配置来实现的，不需要通过硬编码的方式实现。&lt;/p&gt;
+
+&lt;h3 id=&quot;网络初始化&quot;&gt;网络初始化&lt;/h3&gt;
+&lt;p&gt;在&lt;code&gt;caffe.cpp&lt;/code&gt;中main函数之外通过&lt;code&gt;RegisterBrewFunction&lt;/code&gt;这个宏在每一个实现主要功能的函数之后将这个函数的名字和其对应的函数指针添加到了&lt;code&gt;g_brew_map&lt;/code&gt;中,具体分别为&lt;code&gt;train()&lt;/code&gt;，&lt;code&gt;test()&lt;/code&gt;，&lt;code&gt;device_query()&lt;/code&gt;，&lt;code&gt;time()&lt;/code&gt;这四个函数。&lt;/p&gt;
+
+&lt;p&gt;在运行的时候,根据传入的参数在main函数中，通过&lt;code&gt;GetBrewFunction&lt;/code&gt;得到了我们需要调用的那个函数的函数指针，并完成了调用。&lt;/p&gt;
+
+&lt;p&gt;在我们上面所说的训练LeNet的例子中，传入的第二个参数为&lt;code&gt;train&lt;/code&gt;，所以调用的函数为&lt;code&gt;caffe.cpp&lt;/code&gt;中的&lt;code&gt;int train()&lt;/code&gt;函数，接下来主要看这个函数的内容。在&lt;code&gt;train&lt;/code&gt;函数中有下面两行代码，下面的代码定义了一个指向&lt;code&gt;Solver&lt;/code&gt;的&lt;code&gt;shared_ptr&lt;/code&gt;。其中主要是通过调用&lt;code&gt;SolverRegistry&lt;/code&gt;这个类的静态成员函数&lt;code&gt;CreateSolver&lt;/code&gt;得到一个指向&lt;code&gt;Solver&lt;/code&gt;的指针来构造&lt;code&gt;shared_ptr&lt;/code&gt;类型的solver。而且由于C++多态的特性，尽管solver是一个指向基类Solver类型的指针，通过solver这个智能指针来调用各个成员函数会调用到各个子类(SGDSolver等)的函数。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// caffe.cpp
+// 其中输入参数solver_param就是上面所说的第三个参数：网络的模型及求解文件
+shared_ptr&amp;lt;caffe::Solver&amp;lt;float&amp;gt; &amp;gt;
+    solver(caffe::SolverRegistry&amp;lt;float&amp;gt;::CreateSolver(solver_param);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从上面代码可以看出，会先调用父类&lt;code&gt;Solver&lt;/code&gt;的构造函数，如下所示。&lt;code&gt;Solver&lt;/code&gt;类的构造函数通过&lt;code&gt;Init(param)&lt;/code&gt;函数来初始化网络。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//solver.cpp
+template &amp;lt;typename Dtype&amp;gt;
+Solver&amp;lt;Dtype&amp;gt;::Solver(const SolverParameter&amp;amp; param, const Solver* root_solver)
+    : net_(), callbacks_(), root_solver_(root_solver),requested_early_exit_(false)
+{
+  Init(param);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;而在&lt;code&gt;Init(paran)&lt;/code&gt;函数中，又主要是通过&lt;code&gt;InitTrainNet()&lt;/code&gt;和&lt;code&gt;InitTestNets()&lt;/code&gt;函数分别来搭建训练网络结构和测试网络结构。&lt;/p&gt;
+
+&lt;p&gt;训练网络只能有一个,在&lt;code&gt;InitTrainNet()&lt;/code&gt;函数中首先会设置一些基本参数，包括设置网络的状态为TRAIN，确定训练网络只有一个等，然会会通过&lt;code&gt;net_.reset(new Net&amp;lt;Dtype&amp;gt;(net_param));&lt;/code&gt;这条语句新建了一个Net对象。&lt;code&gt;InitTestNets()&lt;/code&gt;函数和&lt;code&gt;InitTrainNet()&lt;/code&gt;函数基本类似。&lt;/p&gt;
+
+&lt;p&gt;上面语句新建了&lt;code&gt;Net&lt;/code&gt;对象之后会调用&lt;code&gt;Net&lt;/code&gt;类的构造函数，构造函数是通过&lt;code&gt;Init(param)&lt;/code&gt;函数来初始化网络结构的。&lt;/p&gt;
+
+&lt;p&gt;在&lt;code&gt;net.cpp&lt;/code&gt;里&lt;code&gt;init()&lt;/code&gt;的主要内容是：其中&lt;code&gt;LayerRegistry&amp;lt;Dtype&amp;gt;::CreateLayer(layer_param)&lt;/code&gt;主要是通过调用&lt;code&gt;LayerRegistry&lt;/code&gt;这个类的静态成员函数&lt;code&gt;CreateLayer&lt;/code&gt;得到一个指向&lt;code&gt;Layer&lt;/code&gt;类的&lt;code&gt;shared_ptr&lt;/code&gt;类型指针。并把每一层的指针存放在&lt;code&gt;vector&amp;lt;shared_ptr&amp;lt;Layer&amp;lt;Dtype&amp;gt; &amp;gt; &amp;gt; layers_&lt;/code&gt;这个指针容器里。这里相当于根据每层的参数&lt;code&gt;layer_param&lt;/code&gt;实例化了对应的各个子类层，比如&lt;code&gt;conv_layer&lt;/code&gt;(卷积层)和&lt;code&gt;pooling_layer&lt;/code&gt;(池化层)。实例化了各层就会调用每个层的构造函数，但每层的构造函数都没有做什么大的设置。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;init()&lt;/code&gt;函数主要又四个部分组成：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;AppendBottom：设置每一层的输入数据&lt;/li&gt;
+  &lt;li&gt;AppendTop：设置每一层的输出数据&lt;/li&gt;
+  &lt;li&gt;layers_[layer_id]-&amp;gt;SetUp：对上面设置的输入输出数据计算分配空间，并设置每层的可学习参数(权值和偏置)&lt;/li&gt;
+  &lt;li&gt;AppendParam：对上面申请的可学习参数进行设置，主要包括学习率和正则率等。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;//net.cpp Init()
+for (int layer_id = 0; layer_id &amp;lt; param.layer_size(); ++layer_id) {//param是网络参数，layer_size()返回网络拥有的层数
+    const LayerParameter&amp;amp; layer_param = param.layer(layer_id);//获取当前layer的参数
+    layers_.push_back(LayerRegistry&amp;lt;Dtype&amp;gt;::CreateLayer(layer_param));//根据参数实例化layer
+
+
+//下面的两个for循环将此layer的bottom blob的指针和top blob的指针放入bottom_vecs_和top_vecs_,bottom blob和top blob的实例全都存放在blobs_中。相邻的两层，前一层的top blob是后一层的bottom blob，所以blobs_的同一个blob既可能是bottom blob，也可能使top blob。
+    for (int bottom_id = 0; bottom_id &amp;lt; layer_param.bottom_size();++bottom_id) {
+       const int blob_id=AppendBottom(param,layer_id,bottom_id,&amp;amp;available_blobs,&amp;amp;blob_name_to_idx);
+    }
+
+    for (int top_id = 0; top_id &amp;lt; num_top; ++top_id) {
+       AppendTop(param, layer_id, top_id, &amp;amp;available_blobs, &amp;amp;blob_name_to_idx);
+    }
+
+// 调用layer类的Setup函数进行初始化，输入参数：每个layer的输入blobs以及输出blobs,为每个blob设置大小
+layers_[layer_id]-&amp;gt;SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
+
+//接下来的工作是将每层的parameter的指针塞进params_，尤其是learnable_params_。
+   const int num_param_blobs = layers_[layer_id]-&amp;gt;blobs().size();
+   for (int param_id = 0; param_id &amp;lt; num_param_blobs; ++param_id) {
+       AppendParam(param, layer_id, param_id);
+       //AppendParam负责具体的dirtywork
+    }
+
+
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;经过上面的过程，&lt;code&gt;Net&lt;/code&gt;类的初始化工作基本就完成了。总体的流程大概就是新建一个&lt;code&gt;Solver&lt;/code&gt;对象，然后调用&lt;code&gt;Solver&lt;/code&gt;类的构造函数，然后在&lt;code&gt;Solver&lt;/code&gt;的构造函数中又会新建&lt;code&gt;Net&lt;/code&gt;类实例，在&lt;code&gt;Net&lt;/code&gt;类的构造函数中又会新建各个&lt;code&gt;Layer&lt;/code&gt;的实例,一直具体到设置每个&lt;code&gt;Blob&lt;/code&gt;,大概就介绍完了网络初始化的工作。&lt;/p&gt;
+
+&lt;h3 id=&quot;训练过程&quot;&gt;训练过程&lt;/h3&gt;
+&lt;p&gt;完成初始化之后，就可以开始对网络经行训练了，开始训练的代码如下所示，指向Solver类的指针solver开始调用Solver类的成员函数Solve()，名称比较绕啊。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// 开始优化
+solver-&amp;gt;Solve();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Solve&lt;/code&gt;函数其实主要就是调用了&lt;code&gt;Solver&lt;/code&gt;的另一个成员函数&lt;code&gt;Step()&lt;/code&gt;来完成实际的迭代训练过程。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//solver.cpp
+template &amp;lt;typename Dtype&amp;gt;
+void Solver&amp;lt;Dtype&amp;gt;::Solve(const char* resume_file) {
+  ...
+  int start_iter = iter_;
+  ...
+  // 然后调用了'Step'函数，这个函数执行了实际的逐步的迭代过程
+  Step(param_.max_iter() - iter_);
+  ...
+  LOG(INFO) &amp;lt;&amp;lt; &quot;Optimization Done.&quot;;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;顺着来看看这个&lt;code&gt;Step()&lt;/code&gt;函数的主要代码,首先是一个大循环设置了总的迭代次数，在每次迭代中训练iter_size x batch_size个样本，这个设置是为了在GPU的显存不够的时候使用，比如我本来想把batch_size设置为128，iter_size是默认为1的，但是会&lt;code&gt;out_of_memory&lt;/code&gt;，借助这个方法，可以设置batch_size=32，iter_size=4，那实际上每次迭代还是处理了128个数据。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//solver.cpp
+template &amp;lt;typename Dtype&amp;gt;
+void Solver&amp;lt;Dtype&amp;gt;::Step(int iters) {
+  ...
+  //迭代
+  while (iter_ &amp;lt; stop_iter) {
+    ...
+    // iter_size也是在solver.prototxt里设置，实际上的batch_size=iter_size*网络定义里的batch_size，
+    // 因此每一次迭代的loss是iter_size次迭代的和，再除以iter_size，这个loss是通过调用`Net::ForwardBackward`函数得到的
+    // accumulate gradients over `iter_size` x `batch_size` instances
+    for (int i = 0; i &amp;lt; param_.iter_size(); ++i) {
+    /*
+     * 调用了Net中的代码，主要完成了前向后向的计算，
+     * 前向用于计算模型的最终输出和Loss，后向用于
+     * 计算每一层网络和参数的梯度。
+     */
+      loss += net_-&amp;gt;ForwardBackward();
+    }
+
+    ...
+
+    /*
+     * 这个函数主要做Loss的平滑。由于Caffe的训练方式是SGD，我们无法把所有的数据同时
+     * 放入模型进行训练，那么部分数据产生的Loss就可能会和全样本的平均Loss不同，在必要
+     * 时候将Loss和历史过程中更新的Loss求平均就可以减少Loss的震荡问题。
+     */
+    UpdateSmoothedLoss(loss, start_iter, average_loss);
+
+
+    ...
+    // 执行梯度的更新，这个函数在基类`Solver`中没有实现，会调用每个子类自己的实现
+    //，后面具体分析`SGDSolver`的实现
+    ApplyUpdate();
+
+    // 迭代次数加1
+    ++iter_;
+    ...
+
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上面&lt;code&gt;Step()&lt;/code&gt;函数主要分为三部分：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;loss += net_-&amp;gt;ForwardBackward();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这行代码通过&lt;code&gt;Net&lt;/code&gt;类的&lt;code&gt;net_&lt;/code&gt;指针调用其成员函数&lt;code&gt;ForwardBackward()&lt;/code&gt;，其代码如下所示,分别调用了成员函数&lt;code&gt;Forward(&amp;amp;loss)&lt;/code&gt;和成员函数&lt;code&gt;Backward()&lt;/code&gt;来进行前向传播和反向传播。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// net.hpp
+// 进行一次正向传播，一次反向传播
+Dtype ForwardBackward() {
+  Dtype loss;
+  Forward(&amp;amp;loss);
+  Backward();
+  return loss;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;前面的&lt;code&gt;Forward(&amp;amp;loss)&lt;/code&gt;函数最终会执行到下面一段代码,&lt;code&gt;Net&lt;/code&gt;类的&lt;code&gt;Forward()&lt;/code&gt;函数会对网络中的每一层执行&lt;code&gt;Layer&lt;/code&gt;类的成员函数&lt;code&gt;Forward()&lt;/code&gt;，而具体的每一层&lt;code&gt;Layer&lt;/code&gt;的派生类会重写&lt;code&gt;Forward()&lt;/code&gt;函数来实现不同层的前向计算功能。上面的&lt;code&gt;Backward()&lt;/code&gt;反向求导函数也和&lt;code&gt;Forward()&lt;/code&gt;类似，调用不同层的&lt;code&gt;Backward()&lt;/code&gt;函数来计算每层的梯度。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//net.cpp
+for (int i = start; i &amp;lt;= end; ++i) {
+// 对每一层进行前向计算，返回每层的loss，其实只有最后一层loss不为0
+  Dtype layer_loss = layers_[i]-&amp;gt;Forward(bottom_vecs_[i], top_vecs_[i]);
+  loss += layer_loss;
+  if (debug_info_) { ForwardDebugInfo(i); }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;UpdateSmoothedLoss();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个函数主要做&lt;code&gt;Loss&lt;/code&gt;的平滑。由于Caffe的训练方式是SGD，我们无法把所有的数据同时放入模型进行训练，那么部分数据产生的&lt;code&gt;Loss&lt;/code&gt;就可能会和全样本的平均&lt;code&gt;Loss&lt;/code&gt;不同，在必要时候将&lt;code&gt;Loss&lt;/code&gt;和历史过程中更新的&lt;code&gt;Loss&lt;/code&gt;求平均就可以减少&lt;code&gt;Loss&lt;/code&gt;的震荡问题&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ApplyUpdate();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个函数是&lt;code&gt;Solver&lt;/code&gt;类的纯虚函数，需要派生类来实现，比如SGDSolver类实现的&lt;code&gt;ApplyUpdate()&lt;/code&gt;;函数如下，主要内容包括：设置参数的学习率；对梯度进行Normalize；对反向求导得到的梯度添加正则项的梯度；最后根据SGD算法计算最终的梯度；最后的最后把计算得到的最终梯度对权值进行更新。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+void SGDSolver&amp;lt;Dtype&amp;gt;::ApplyUpdate() {
+  CHECK(Caffe::root_solver());
+
+  // GetLearningRate根据设置的lr_policy来计算当前迭代的learning rate的值
+  Dtype rate = GetLearningRate();
+
+  // 判断是否需要输出当前的learning rate
+  if (this-&amp;gt;param_.display() &amp;amp;&amp;amp; this-&amp;gt;iter_ % this-&amp;gt;param_.display() == 0) {
+    LOG(INFO) &amp;lt;&amp;lt; &quot;Iteration &quot; &amp;lt;&amp;lt; this-&amp;gt;iter_ &amp;lt;&amp;lt; &quot;, lr = &quot; &amp;lt;&amp;lt; rate;
+  }
+
+  // 避免梯度爆炸，如果梯度的二范数超过了某个数值则进行scale操作，将梯度减小
+  ClipGradients();
+
+  // 对所有可更新的网络参数进行操作
+  for (int param_id = 0; param_id &amp;lt; this-&amp;gt;net_-&amp;gt;learnable_params().size();
+       ++param_id) {
+	// 将第param_id个参数的梯度除以iter_size，
+	// 这一步的作用是保证实际的batch_size=iter_size*设置的batch_size
+    Normalize(param_id);
+
+    // 将正则化部分的梯度降入到每个参数的梯度中
+    Regularize(param_id);
+
+    // 计算SGD算法的梯度(momentum等)
+    ComputeUpdateValue(param_id, rate);
+  }
+  // 调用`Net::Update`更新所有的参数
+  this-&amp;gt;net_-&amp;gt;Update();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;等进行了所有的循环，网络的训练也算是完成了。上面大概说了下使用Caffe进行网络训练时网络初始化以及前向传播、反向传播、梯度更新的过程，其中省略了大量的细节。上面还有很多东西都没提到，比如说Caffe中&lt;code&gt;Layer&lt;/code&gt;派生类的注册及各个具体层前向反向的实现、&lt;code&gt;Solver&lt;/code&gt;派生类的注册、网络结构的读取、模型的保存等等大量内容。&lt;/p&gt;</content><author><name></name></author><summary type="html">之前一直在学习Transfer Learning，看到DAN和RTN的源代码都是用Caffe写的，所以趁此机会来学习一下Caffe的源代码，为了之后能自己写出来自己的类。</summary></entry><entry><title type="html">From object recognition to instance recognition</title><link href="http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition.html" rel="alternate" type="text/html" title="From object recognition to instance recognition" /><published>2017-06-25T20:38:00+08:00</published><updated>2017-06-25T20:38:00+08:00</updated><id>http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition</id><content type="html" xml:base="http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition.html">&lt;p&gt;最近考完试重新开始学习物体识别相关的知识。之前大作业的时候就学习过RCNN系列的三篇论文，然后自己尝试了基于SegNet的semantic segmentation任务。前段时间看Kaiming大神 的Mask R-CNN，又想重新温故一下这一系列的文章，正好也是第一次在知乎上写文章，就当作给自己看的论文的一个总结的地方吧。（反正也没人看，我就随便写写了）
 先推荐一个之前在知乎上看的一个专栏（&lt;a href=&quot;https://zhuanlan.zhihu.com/xiaoleimlnote&quot;&gt;晓雷机器学习笔记&lt;/a&gt;）的这个系列，感觉写的也很不错，所以放在这里做个列表：&lt;/p&gt;
 
 &lt;ul&gt;

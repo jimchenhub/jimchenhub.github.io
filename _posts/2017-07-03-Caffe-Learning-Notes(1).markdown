@@ -31,7 +31,7 @@ categories: Caffe
 * `Net` 是对整个网络的表示，由各种 `Layer` 前后连接组合而成，也是我们所构建的网络模型。
 * `Solver` 定义了针对 Net 网络模型的求解方法，记录网络的训练过程，保存网络模型参数，中断并恢复网络的训练过程。自定义 `Solver` 能够实现不同的网络求解方式。
 
-![Caffe structures](images/caffe_structure.png)
+![Caffe structures](/images/caffe_structure.png)
 
 ## 总体学习——通过Caffe训练LeNet来看看网络初始化和训练过程
 

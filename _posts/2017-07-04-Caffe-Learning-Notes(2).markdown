@@ -5,7 +5,7 @@ date:   2017-07-04 12:00:00 +0800
 categories: Caffe
 ---
 
-## 模块学习——Protocol Buffer
+# 模块学习——Protocol Buffer
 除了清晰的代码结构，让Caffe变得易用更应该归功于Google Protocol Buffer的使用。Google Protocol Buffer是Google开发的一个用于serializing结构化数据的开源工具:
 
 > Protocol buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data.
@@ -14,18 +14,18 @@ Caffe使用这个工具来定义`Solver`和`Net`，以及`Net`中每一个`layer
 
 **Protocol Buffer的学习** [Protocol Buffer Basics: C++](https://developers.google.com/protocol-buffers/docs/cpptutorial#why-use-protocol-buffers)
 
-#### Caffe中的应用
+### Caffe中的应用
 caffe当中的使用可以见 `caffe/src/caffe/proto/caffe.proto`  
 Reference: [Protocol Buffer in Caffe](http://alanse7en.github.io/caffedai-ma-jie-xi-2/)
 
 prototxt的编写可以直接参考官方文档，可以参考的地方也很多，编写时也有一个可视化的工具来帮梦，地址入下：
 [Quick Start — Netscope](http://ethereon.github.io/netscope/quickstart.html)
 
-### Reference
+## Reference
 [1] http://alanse7en.github.io/caffedai-ma-jie-xi-1/ 
 
-## 模块学习——Command Line Interfaces
-### Google Flags
+# 模块学习——Command Line Interfaces
+## Google Flags
 Caffe的Command Line Interfaces一共提供了四个功能：`train`, `test`, `time`, `device_query`，而Interfaces的输入除了这四种功能还可以输入诸如`-solver`, `-weights`, `-snapshot`, `-gpu`等参数。 *这些参数的解析是通过Google Flags这个工具来完成的* 。[1]
 
 解析这些标志的代码在caffe.cpp中的main()中调用了/CAFFE_ROOT/src/common.cpp中的GlobalInit(&argc, &argv)函数：
@@ -41,7 +41,7 @@ void GlobalInit(int* pargc, char*** pargv) {
 }
 ```
 
-### Register Brew Function
+## Register Brew Function
 Caffe在Command Line Interfaces中一共提供了4种功能:`train`/`test`/`time`/`device_query`，分别对应着四个函数，这四个函数的调用是通过一个叫做`g_brew_map`的全局变量来完成的：
 
 ```
@@ -57,7 +57,7 @@ BrewMap g_brew_map;
 
 具体可以参考 reference [1] [Caffe代码解析(3) – Xuesong’s Blog](http://alanse7en.github.io/caffedai-ma-3/)
 
-### train() 函数
+## train() 函数
 
 ```
  CHECK_GT(FLAGS_solver.size(), 0) << "Need a solver definition to train.";
@@ -108,5 +108,5 @@ caffe::ReadSolverParamsFromTextFileOrDie(FLAGS_solver, &solver_param);
 
 接下来的代码则通过一个get\_gpus的函数，将存放在FLAGS\_gpu中的string转成了一个vector，并完成了具体的设置。[1]
 
-### References
+## References
 [1] http://alanse7en.github.io/caffedai-ma-3/
