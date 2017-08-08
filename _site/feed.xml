@@ -1,5 +1,190 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-07-05T15:25:30+08:00</updated><id>http://localhost:4000/</id><title type="html">JimChen’s Blog</title><subtitle>This Blog is about my learning and daily life.
-</subtitle><entry><title type="html">Learn DAN prototxt</title><link href="http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt.html" rel="alternate" type="text/html" title="Learn DAN prototxt" /><published>2017-07-05T10:30:00+08:00</published><updated>2017-07-05T10:30:00+08:00</updated><id>http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt</id><content type="html" xml:base="http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt.html">&lt;h2 id=&quot;about-dan&quot;&gt;About DAN&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-08-07T22:17:23+08:00</updated><id>http://localhost:4000/</id><title type="html">JimChen’s Blog</title><subtitle>This Blog is about my learning and daily life.
+</subtitle><entry><title type="html">ROS学习（一）——Navigation</title><link href="http://localhost:4000/caffe,/dan/2017/08/07/ROS%E5%AD%A6%E4%B9%A0-%E4%B8%80-Navigation.html" rel="alternate" type="text/html" title="ROS学习（一）——Navigation" /><published>2017-08-07T16:30:00+08:00</published><updated>2017-08-07T16:30:00+08:00</updated><id>http://localhost:4000/caffe,/dan/2017/08/07/ROS%E5%AD%A6%E4%B9%A0(%E4%B8%80)%E2%80%94%E2%80%94Navigation</id><content type="html" xml:base="http://localhost:4000/caffe,/dan/2017/08/07/ROS%E5%AD%A6%E4%B9%A0-%E4%B8%80-Navigation.html">&lt;p&gt;这次不想从头开始写ROS学习的部分，基础的很多概念都是学习的&lt;a href=&quot;http://wiki.ros.org/Books/Programming_Robots_with_ROS&quot;&gt;这本书&lt;/a&gt;，里面前面有很清楚的例子，也是围绕indigo这个版本来教学的，资料也非常多，做了一些简单的小bot。例如wander_bot, follow_bot等等。&lt;/p&gt;
+
+&lt;p&gt;但是对于坐标变换、图像处理、路径规划、地图导航等几个之后常用的方面还是了解甚少，所以特意把这几块的学习部分记录下来。&lt;/p&gt;
+
+&lt;h2 id=&quot;setting-up-robot-using-tf&quot;&gt;Setting up robot using tf&lt;/h2&gt;
+&lt;p&gt;这里主要参考ros wiki上的 &lt;a href=&quot;http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF&quot;&gt;这篇文章&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;basic-concepts&quot;&gt;Basic Concepts&lt;/h3&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;TF&lt;/code&gt;主要用于有很多不同的frame，而各自处理坐标变换极为复杂的情况。对于如下的简单例子，&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF?action=AttachFile&amp;amp;do=get&amp;amp;target=simple_robot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;有两个frame，&lt;code class=&quot;highlighter-rouge&quot;&gt;base_laser&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;base_link&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;TF&lt;/code&gt;用一个树结构来保证两个frame间的单向连接。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://wiki.ros.org/navigation/Tutorials/RobotSetup/TF?action=AttachFile&amp;amp;do=get&amp;amp;target=tf_robot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;首先要确定何为父节点何为儿子节点，再确定连接的方向。&lt;/p&gt;
+
+&lt;h3 id=&quot;writing-codes&quot;&gt;Writing codes&lt;/h3&gt;
+&lt;p&gt;以&lt;code class=&quot;highlighter-rouge&quot;&gt;base_link&lt;/code&gt;为父节点，我们将&lt;code class=&quot;highlighter-rouge&quot;&gt;base_laser&lt;/code&gt;的数据转换到&lt;code class=&quot;highlighter-rouge&quot;&gt;base_link&lt;/code&gt;上。首先创建一个package，使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;roscpp&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;tf&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;geometry_msgs&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cd %TOP_DIR_YOUR_CATKIN_WS%/src
+$ catkin_create_pkg robot_setup_tf roscpp tf geometry_msgs
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;broadcasting-a-transform&quot;&gt;Broadcasting a Transform&lt;/h3&gt;
+&lt;p&gt;接下来要创建一个node把 &lt;code class=&quot;highlighter-rouge&quot;&gt;base_laser → base_link&lt;/code&gt; 的变换广播给ROS。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#include &amp;lt;ros/ros.h&amp;gt;
+#include &amp;lt;tf/transform_broadcaster.h&amp;gt;
+
+int main(int argc, char** argv){
+  ros::init(argc, argv, &quot;robot_tf_publisher&quot;);
+  ros::NodeHandle n;
+
+  ros::Rate r(100);
+
+  tf::TransformBroadcaster broadcaster;
+
+  while(n.ok()){
+    broadcaster.sendTransform(
+      tf::StampedTransform(
+        tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.1, 0.0, 0.2)),
+        ros::Time::now(),&quot;base_link&quot;, &quot;base_laser&quot;));
+    r.sleep();
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;The tf package provides an implementation of a tf::TransformBroadcaster to help make the task of publishing transforms easier. To use the TransformBroadcaster, we need to include the tf/transform_broadcaster.h header file.&lt;/p&gt;</content><author><name></name></author><summary type="html">这次不想从头开始写ROS学习的部分，基础的很多概念都是学习的这本书，里面前面有很清楚的例子，也是围绕indigo这个版本来教学的，资料也非常多，做了一些简单的小bot。例如wander_bot, follow_bot等等。</summary></entry><entry><title type="html">解决Caffe make runtest失败的方法</title><link href="http://localhost:4000/caffe,/dan/2017/07/05/%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95.html" rel="alternate" type="text/html" title="解决Caffe make runtest失败的方法" /><published>2017-07-05T10:30:00+08:00</published><updated>2017-07-05T10:30:00+08:00</updated><id>http://localhost:4000/caffe,/dan/2017/07/05/%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95</id><content type="html" xml:base="http://localhost:4000/caffe,/dan/2017/07/05/%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95.html">&lt;p&gt;在实验室的服务器上执行make runtest时会出现如下的错误：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Failed] SGDSolverTest/2.TestLeastSquaresUpdate, where TypeParam = caffe::GPUDevices&amp;lt;float&amp;gt;
+...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这里的报错信息里面显示的是“GPUDevice”而不是“CPUDevice”，这种情况可能是因为配置了&lt;strong&gt;多显卡环境&lt;/strong&gt;，可以使用安装CUDA时运行./deviceQuery时标注的0号GPU(“Device 0”)跑跑测试试试看。使用如下命令：&lt;code class=&quot;highlighter-rouge&quot;&gt;export CUDA_VISIBLE_DEVICES=0&lt;/code&gt;，然后重新 &lt;code class=&quot;highlighter-rouge&quot;&gt;make runtest&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;本文参考自：&lt;a href=&quot;http://blog.csdn.net/wonengguwozai/article/details/52724409&quot;&gt;编译caffe源码时,make runtest问题解决方案&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;在此顺带附上实验环境和Makefile.config文件内容&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;系统：Ubuntu 16.04&lt;/li&gt;
+  &lt;li&gt;CUDA：8.0&lt;/li&gt;
+  &lt;li&gt;cuDNN：5.1.10&lt;/li&gt;
+  &lt;li&gt;Caffe：Caffe 1 Latest version&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Makefile.config&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;## Refer to http://caffe.berkeleyvision.org/installation.html
+# Contributions simplifying and improving our build system are welcome!
+
+# cuDNN acceleration switch (uncomment to build with cuDNN).
+USE_CUDNN := 1
+# CUDNN_PATH := /home/libs/cuda-5.0
+
+# CPU-only switch (uncomment to build without GPU support).
+# CPU_ONLY := 1
+
+# uncomment to disable IO dependencies and corresponding data layers
+# USE_OPENCV := 0
+# USE_LEVELDB := 0
+# USE_LMDB := 0
+
+# uncomment to allow MDB_NOLOCK when reading LMDB files (only if necessary)
+#	You should not set this flag if you will be reading LMDBs with any
+#	possibility of simultaneous read and write
+# ALLOW_LMDB_NOLOCK := 1
+
+# Uncomment if you're using OpenCV 3
+# OPENCV_VERSION := 3
+
+# To customize your choice of compiler, uncomment and set the following.
+# N.B. the default for Linux is g++ and the default for OSX is clang++
+# CUSTOM_CXX := g++
+
+# CUDA directory contains bin/ and lib/ directories that we need.
+CUDA_DIR := /usr/local/cuda
+# On Ubuntu 14.04, if cuda tools are installed via
+# &quot;sudo apt-get install nvidia-cuda-toolkit&quot; then use this instead:
+# CUDA_DIR := /usr
+
+# CUDA architecture setting: going with all of them.
+# For CUDA &amp;lt; 6.0, comment the *_50 lines for compatibility.
+CUDA_ARCH := -gencode arch=compute_20,code=sm_20 \
+		-gencode arch=compute_20,code=sm_21 \
+		-gencode arch=compute_30,code=sm_30 \
+		-gencode arch=compute_35,code=sm_35 \
+		-gencode arch=compute_50,code=sm_50 \
+		-gencode arch=compute_50,code=compute_50
+
+# BLAS choice:
+# atlas for ATLAS (default)
+# mkl for MKL
+# open for OpenBlas
+BLAS := atlas
+# Custom (MKL/ATLAS/OpenBLAS) include and lib directories.
+# Leave commented to accept the defaults for your choice of BLAS
+# (which should work)!
+# BLAS_INCLUDE := /opt/OpenBLAS/include
+# BLAS_LIB := /opt/OpenBLAS/lib
+
+# Homebrew puts openblas in a directory that is not on the standard search path
+# BLAS_INCLUDE := $(shell brew --prefix openblas)/include
+# BLAS_LIB := $(shell brew --prefix openblas)/lib
+
+# This is required only if you will compile the matlab interface.
+# MATLAB directory should contain the mex binary in /bin.
+# MATLAB_DIR := /usr/local
+# MATLAB_DIR := /Applications/MATLAB_R2012b.app
+
+# NOTE: this is required only if you will compile the python interface.
+# We need to be able to find Python.h and numpy/arrayobject.h.
+PYTHON_INCLUDE := /usr/include/python2.7 \
+		/usr/lib/python2.7/dist-packages/numpy/core/include
+# Anaconda Python distribution is quite popular. Include path:
+# Verify anaconda location, sometimes it's in root.
+# ANACONDA_HOME := $(HOME)/anaconda
+# PYTHON_INCLUDE := $(ANACONDA_HOME)/include \
+		# $(ANACONDA_HOME)/include/python2.7 \
+		# $(ANACONDA_HOME)/lib/python2.7/site-packages/numpy/core/include \
+
+# Uncomment to use Python 3 (default is Python 2)
+# PYTHON_LIBRARIES := boost_python3 python3.5m
+# PYTHON_INCLUDE := /usr/include/python3.5m \
+#                 /usr/lib/python3.5/dist-packages/numpy/core/include
+
+# We need to be able to find libpythonX.X.so or .dylib.
+PYTHON_LIB := /usr/lib
+# PYTHON_LIB := $(ANACONDA_HOME)/lib
+
+# Homebrew installs numpy in a non standard path (keg only)
+# PYTHON_INCLUDE += $(dir $(shell python -c 'import numpy.core; print(numpy.core.__file__)'))/include
+# PYTHON_LIB += $(shell brew --prefix numpy)/lib
+
+# Uncomment to support layers written in Python (will link against Python libs)
+# WITH_PYTHON_LAYER := 1
+
+# Whatever else you find you need goes here.
+INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/include/hdf5/serial/ # $(CUDNN_PATH)/include
+LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/hdf5/serial # $(CUDNN_PATH)/lib64
+
+# If Homebrew is installed at a non standard location (for example your home directory) and you use it for general dependencies
+# INCLUDE_DIRS += $(shell brew --prefix)/include
+# LIBRARY_DIRS += $(shell brew --prefix)/lib
+
+# Uncomment to use `pkg-config` to specify OpenCV library paths.
+# (Usually not necessary -- OpenCV libraries are normally installed in one of the above $LIBRARY_DIRS.)
+# USE_PKG_CONFIG := 1
+
+BUILD_DIR := build
+DISTRIBUTE_DIR := distribute
+
+# Uncomment for debugging. Does not work on OSX due to https://github.com/BVLC/caffe/issues/171
+# DEBUG := 1
+
+# The ID of the GPU that 'make runtest' will use to run unit tests.
+TEST_GPUID := 0
+
+# enable pretty build (comment to see full commands)
+Q ?= @
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html">在实验室的服务器上执行make runtest时会出现如下的错误：</summary></entry><entry><title type="html">Learn DAN prototxt</title><link href="http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt.html" rel="alternate" type="text/html" title="Learn DAN prototxt" /><published>2017-07-05T10:30:00+08:00</published><updated>2017-07-05T10:30:00+08:00</updated><id>http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt</id><content type="html" xml:base="http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt.html">&lt;h2 id=&quot;about-dan&quot;&gt;About DAN&lt;/h2&gt;
 &lt;p&gt;DAN (Deep Adaptation Network) was proposed to learn transferable features which generalize well to novel tasks for &lt;code class=&quot;highlighter-rouge&quot;&gt;Domain Adaptation&lt;/code&gt;. In DAN, hidden representa- tions of all task-specific layers are embedded in a reproducing kernel Hilbert space where the mean embeddings of different domain distributions can be explicitly matched. The domain discrepancy is further reduced using an optimal multi-kernel selection method for mean embedding matching.[1]&lt;/p&gt;
 
 &lt;p&gt;Here is the main structure of DAN.&lt;/p&gt;
