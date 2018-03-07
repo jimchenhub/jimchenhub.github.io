@@ -88,3 +88,10 @@ blockquote {
   a:visited { @include underline($solarized_base3); }
 
 }
+
+img {
+  max-width: 100%;
+  & { 
+    text-align: center;
+  }
+}
