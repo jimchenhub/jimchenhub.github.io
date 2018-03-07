@@ -17,4 +17,4 @@ categories: Batch Normalization, Deep Learning
 
 另一种反向传播的方法是直接计算出直接的求导式子。但是由于x hat对于x求导时无论mean还是variance都包含x，所以求导比较复杂，这里主要参考 [Deriving the Gradient for the Backward Pass of Batch Normalization](https://kevinzakka.github.io/2016/09/14/batch_normalization/)。其中对于x的求导是计算多个部分的偏导然后求和计算的。
 
-![bn_backward_formulations](../images/bn_backward_formulations.png)
+![bn_backward_formulations](/images/bn_backward_formulations.png)
