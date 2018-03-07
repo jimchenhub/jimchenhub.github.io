@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "ROS学习（一）——Navigation"
+title:  "ROS学习Navigation（一）"
 date:   2017-08-07 16:30:00 +0800
-categories: Caffe, DAN
+categories: ROS, Navigation
 ---
 
 这次不想从头开始写ROS学习的部分，基础的很多概念都是学习的 [这本书](http://wiki.ros.org/Books/Programming_Robots_with_ROS)，里面前面有很清楚的例子，也是围绕indigo这个版本来教学的，资料也非常多，做了一些简单的小bot。例如wander_bot, follow_bot等等。
@@ -121,41 +121,3 @@ add_executable(tf_listener src/tf_listener.cpp)
 target_link_libraries(tf_broadcaster ${catkin_LIBRARIES})
 target_link_libraries(tf_listener ${catkin_LIBRARIES})
 ```
-
-
-
-## Setup and Configuration of the Navigation Stack on a Robot
-
-在学习了基础的TF知识后，可以开始逐步学习如何publish tf的数据，Odometry的数据，sensor的数据，以及基础的navigation的设置。官方网站上写明了一个基础的navigation的tuning方法的[教程](http://wiki.ros.org/navigation/Tutorials/Navigation%20Tuning%20Guide)，其中的cost map和Local Planer的部分是讲得稍微深入具体一些的，还没有完全看懂，但是相信日后会比较有参考价值。
-
-首先来看一个整体的设计图，这个图非常的高层抽象，是很好的理解材料
-
-
-
-![robot setup](http://wiki.ros.org/navigation/Tutorials/RobotSetup?action=AttachFile&do=get&target=overview_tf_small.png)
-
-白色的框是已经被实现的必须的部分，灰色的已经被实现的可选部分，蓝色的是需要对不同机器人设计的部分。
-
-### Setup
-
-1. 首先需要完成TF transform information 信息的发布，这个在前一大节已经讲解。
-2. 机器人在世界中的导航是需要获取传感器信息来避障的，所以ROS假设这些信息是通过`sensor_msgs/LaserScan` 或 `sensor_msgs/PointCloud`来接收的。
-3. Odometry信息需要通过`tf`和 `nav_msgs/Odometry`来发布。[这里](http://wiki.ros.org/navigation/Tutorials/RobotSetup/Odom)是有相关的教程的。
-
-
-
-
-
-,
-
-	"TargetPlatforms": [
-		"MacNoEditor",
-		"WindowsNoEditor"
-	],
-	"EpicSampleNameHash": "1226740271",
-	"Plugins": [
-		{
-			"Name": "AirSim",
-			"Enabled": true
-		}
-	]
