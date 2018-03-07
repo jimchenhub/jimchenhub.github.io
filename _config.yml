@@ -1,43 +1,83 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#######################
+# Theme Customization #
+#######################
 
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
-title: JimChen's Blog
-email: jimchen0605@qq.com
-description: > # this means to ignore newlines until "baseurl:"
-  This Blog is about my learning and daily life.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jimchen65
-github_username:  jimchenhub
+title: Jim Chen                             # used in <title> tag & site header
+author: Jim Chen                        # used in a <meta> tag & /feed.xml
+description: >                              # used in a <meta> tag & /feed.xml
+  Hello 911 emergency, there's a handsome guy in my house!
+  Oh wait a second, cancel that. It's only me.
+slogan: Showtime!                           # used in site header, beside title
+avatar: /i/avatar.png                       # used as portrait in site header
+banner: /i/mountains.svg                    # used as background in site header
+url: http://solana.ryanlue.com              # used by plugins to generate feed.xml and sitemap.xml
+baseurl: ''                                 # prepended to all absolute filepaths
+repo: https://github.com/jimchenhub/jimchenhub.github.io # used in footer
 
-# Build settings
-markdown: kramdown
-theme: minima
+# Objects listed here will appear in the main nav menu.
+# Exceeding four items may cause problems on the desktop (>900px wide) layout.
+nav_menu:
+  - name: Posts
+    url: /
+    icon: /i/icons.svg#posts # icons should be 24x24 px.
+  - name: Projects
+    url: /projects
+    icon: /i/icons.svg#portfolio
+  - name: GitHub
+    url: https://github.com/jimchenhub/
+    icon: /i/icons.svg#github
+    outbound: true      # this key sets a link to open in a new window.
+  # - name: Contact
+  #   scheme: mailto          # these keys enable email obfuscation.
+  #   handle: jimchen@      # you know, to protect you from bots. (handle and domain
+  #   domain: qq.com          # are separated in case bots crawl GitHub repos, too.)
+  #   icon: /i/icons.svg#email
+
+# Objects listed here will appear on the /projects.html page.
+projects:
+  - title: Smart Car
+    teaser: Avoid obstacles automatically using image processing and machine learning
+    url: https://github.com/jimchenhub/Smart-Car
+    role: Creator
+    category: OpenCV, CNN, Raspberry PI 
+  - title: Transferable UAV
+    teaser: A new pipeline of training a monocular UAV to fly a collision-free trajectory along the dense forest trail
+    url: https://sites.google.com/view/forest-trail-dataset
+    role: Author
+    category: UAV, Transfer Learning, DAN
+
+#################
+# Site Settings #
+#################
+
+incremental: true
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - README.md
+  - TODO.md
+
+permalink: /:collection/:path
+
+collections:
+  category: { output: true }
+  tag:      { output: true }
+
+defaults:
+  - scope:  { type:   posts    }
+    values: { layout: post     }
+  - scope:  { type:   tag      }
+    values: { layout: listing  }
+  - scope:  { type:   category }
+    values: { layout: listing  }
+
+sass:
+  sass_dir: _assets/css
+
 plugins:
+  - jekyll-paginate
   - jekyll-feed
+  - jekyll-sitemap
 
-highlighter: rouge
-
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+paginate: 10

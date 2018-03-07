@@ -1,5 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.5.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-08-07T22:17:23+08:00</updated><id>http://localhost:4000/</id><title type="html">JimChen’s Blog</title><subtitle>This Blog is about my learning and daily life.
-</subtitle><entry><title type="html">ROS学习（一）——Navigation</title><link href="http://localhost:4000/caffe,/dan/2017/08/07/ROS%E5%AD%A6%E4%B9%A0-%E4%B8%80-Navigation.html" rel="alternate" type="text/html" title="ROS学习（一）——Navigation" /><published>2017-08-07T16:30:00+08:00</published><updated>2017-08-07T16:30:00+08:00</updated><id>http://localhost:4000/caffe,/dan/2017/08/07/ROS%E5%AD%A6%E4%B9%A0(%E4%B8%80)%E2%80%94%E2%80%94Navigation</id><content type="html" xml:base="http://localhost:4000/caffe,/dan/2017/08/07/ROS%E5%AD%A6%E4%B9%A0-%E4%B8%80-Navigation.html">&lt;p&gt;这次不想从头开始写ROS学习的部分，基础的很多概念都是学习的&lt;a href=&quot;http://wiki.ros.org/Books/Programming_Robots_with_ROS&quot;&gt;这本书&lt;/a&gt;，里面前面有很清楚的例子，也是围绕indigo这个版本来教学的，资料也非常多，做了一些简单的小bot。例如wander_bot, follow_bot等等。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-03-08T00:11:30+08:00</updated><id>http://localhost:4000/</id><title type="html">Jim Chen</title><subtitle>Hello 911 emergency, there's a handsome guy in my house! Oh wait a second, cancel that. It's only me.
+</subtitle><author><name>Jim Chen</name></author><entry><title type="html">关于Batch_Normalization的公式推导和代码实现</title><link href="http://localhost:4000/posts/2018-03-07-%E5%85%B3%E4%BA%8EBatch_Normalization%E7%9A%84%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%92%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0" rel="alternate" type="text/html" title="关于Batch_Normalization的公式推导和代码实现" /><published>2018-03-07T20:55:00+08:00</published><updated>2018-03-07T20:55:00+08:00</updated><id>http://localhost:4000/posts/%E5%85%B3%E4%BA%8EBatch_Normalization%E7%9A%84%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%92%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0</id><content type="html" xml:base="http://localhost:4000/posts/2018-03-07-%E5%85%B3%E4%BA%8EBatch_Normalization%E7%9A%84%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%92%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0">&lt;p&gt;最近在学习CS231n，其中笔记部分会在其他部分，这里重点推导一下Batch Normalization的前馈和反馈。前馈部分比较简单，直接复制原文的图吧。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://kratzert.github.io/images/bn_backpass/bn_algorithm.PNG&quot; alt=&quot;BN forward&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这里对前馈的部分做一下简要的说明。normalize部分是一个平移和缩放的组合，但是为了保证并非所有层都是零均值的unit gaussian。所以加上了后面的scale and shift部分，来增加BN层的灵活性。&lt;/p&gt;
+
+&lt;p&gt;关于BN的方向传播，一种方法是使用computational graph来计算，这种方法主要参考 &lt;a href=&quot;https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html&quot;&gt;Understanding the backward pass through Batch Normalization Layer&lt;/a&gt;。对应的计算图如下&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://kratzert.github.io/images/bn_backpass/BNcircuit.png&quot; alt=&quot;computational graph&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;另一种反向传播的方法是直接计算出直接的求导式子。但是由于x hat对于x求导时无论mean还是variance都包含x，所以求导比较复杂，这里主要参考 &lt;a href=&quot;https://kevinzakka.github.io/2016/09/14/batch_normalization/&quot;&gt;Deriving the Gradient for the Backward Pass of Batch Normalization&lt;/a&gt;。其中对于x的求导是计算多个部分的偏导然后求和计算的。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/bn_backward_formulations.png&quot; alt=&quot;bn_backward_formulations&quot; /&gt;&lt;/p&gt;</content><author><name>Jim Chen</name></author><summary type="html">最近在学习CS231n，其中笔记部分会在其他部分，这里重点推导一下Batch Normalization的前馈和反馈。前馈部分比较简单，直接复制原文的图吧。</summary></entry><entry><title type="html">ROS学习Navigation（二）</title><link href="http://localhost:4000/posts/2017-08-11-ROS%E5%AD%A6%E4%B9%A0Navigation(%E4%BA%8C)" rel="alternate" type="text/html" title="ROS学习Navigation（二）" /><published>2017-08-11T19:30:00+08:00</published><updated>2017-08-11T19:30:00+08:00</updated><id>http://localhost:4000/posts/ROS%E5%AD%A6%E4%B9%A0Navigation(%E4%BA%8C)</id><content type="html" xml:base="http://localhost:4000/posts/2017-08-11-ROS%E5%AD%A6%E4%B9%A0Navigation(%E4%BA%8C)">&lt;p&gt;紧接着上一篇继续实现第二部分。&lt;/p&gt;
+
+&lt;h2 id=&quot;setup-and-configuration-of-the-navigation-stack-on-a-robot&quot;&gt;Setup and Configuration of the Navigation Stack on a Robot&lt;/h2&gt;
+
+&lt;p&gt;在学习了基础的TF知识后，可以开始逐步学习如何publish tf的数据，Odometry的数据，sensor的数据，以及基础的navigation的设置。官方网站上写明了一个基础的navigation的tuning方法的&lt;a href=&quot;http://wiki.ros.org/navigation/Tutorials/Navigation%20Tuning%20Guide&quot;&gt;教程&lt;/a&gt;，其中的cost map和Local Planer的部分是讲得稍微深入具体一些的，还没有完全看懂，但是相信日后会比较有参考价值。&lt;/p&gt;
+
+&lt;p&gt;首先来看一个整体的设计图，这个图非常的高层抽象，是很好的理解材料&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://wiki.ros.org/navigation/Tutorials/RobotSetup?action=AttachFile&amp;amp;do=get&amp;amp;target=overview_tf_small.png&quot; alt=&quot;robot setup&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;白色的框是已经被实现的必须的部分，灰色的已经被实现的可选部分，蓝色的是需要对不同机器人设计的部分。&lt;/p&gt;
+
+&lt;h3 id=&quot;1-setup&quot;&gt;1. Setup&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;首先需要完成TF transform information 信息的发布，这个在前一大节已经讲解。&lt;/li&gt;
+  &lt;li&gt;机器人在世界中的导航是需要获取传感器信息来避障的，所以ROS假设这些信息是通过&lt;code class=&quot;highlighter-rouge&quot;&gt;sensor_msgs/LaserScan&lt;/code&gt; 或 &lt;code class=&quot;highlighter-rouge&quot;&gt;sensor_msgs/PointCloud&lt;/code&gt;来接收的。&lt;a href=&quot;http://wiki.ros.org/navigation/Tutorials/RobotSetup/Sensors&quot;&gt;Publishing Sensor Streams Over ROS&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Odometry信息需要通过&lt;code class=&quot;highlighter-rouge&quot;&gt;tf&lt;/code&gt;和 &lt;code class=&quot;highlighter-rouge&quot;&gt;nav_msgs/Odometry&lt;/code&gt;来发布。&lt;a href=&quot;http://wiki.ros.org/navigation/Tutorials/RobotSetup/Odom&quot;&gt;这里&lt;/a&gt;是有相关的教程的。&lt;/li&gt;
+  &lt;li&gt;Base Controller (base controller)。速度的指令是通过&lt;code class=&quot;highlighter-rouge&quot;&gt;geometry_msgs/Twist&lt;/code&gt; message来传递给&lt;code class=&quot;highlighter-rouge&quot;&gt;cmd_vel&lt;/code&gt; topic的。使用的frame是&lt;code class=&quot;highlighter-rouge&quot;&gt;base coordinate frame&lt;/code&gt;。&lt;/li&gt;
+  &lt;li&gt;Mapping (map_server) navigation本身是不需要map的，但是可以在 &lt;a href=&quot;http://wiki.ros.org/slam_gmapping/Tutorials/MappingFromLoggedData&quot;&gt;building a map&lt;/a&gt; 来创建一个运行环境的map。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;2-navigation-stack-setup&quot;&gt;2. Navigation Stack Setup&lt;/h3&gt;
+
+&lt;p&gt;至此，已经通过tf publish了坐标系frame，可以接收到&lt;code class=&quot;highlighter-rouge&quot;&gt;sensor_msgs/LaserScan&lt;/code&gt; 或 &lt;code class=&quot;highlighter-rouge&quot;&gt;sensor_msgs/PointCloud&lt;/code&gt;的sensor信息，使用了tf和&lt;code class=&quot;highlighter-rouge&quot;&gt;nav_msgs/Odometry&lt;/code&gt;发布了Odometry信息，同时接收了速度的命令。如果有任何一条未能满足，需要先完成上述的Setup部分。&lt;/p&gt;
+
+&lt;h4 id=&quot;21-创建package&quot;&gt;2.1 创建package&lt;/h4&gt;
+&lt;p&gt;这个package要依赖于前面的所有package以及包含navigation stack高层接口 move_base package。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;catkin_create_pkg my_robot_name_2dnav roscpp move_base my_tf_configuration_dep my_odom_configuration_dep my_sensor_configuration_dep
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;my_tf_configuration_dep&lt;/code&gt; 包括&lt;code class=&quot;highlighter-rouge&quot;&gt;tf&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt; geometry_msgs&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;my_odom_configuration_dep &lt;/code&gt; 包括&lt;/p&gt;</content><author><name>Jim Chen</name></author><summary type="html">紧接着上一篇继续实现第二部分。</summary></entry><entry><title type="html">ROS学习Navigation（一）</title><link href="http://localhost:4000/posts/2017-08-07-ROS%E5%AD%A6%E4%B9%A0Navigation(%E4%B8%80)" rel="alternate" type="text/html" title="ROS学习Navigation（一）" /><published>2017-08-07T16:30:00+08:00</published><updated>2017-08-07T16:30:00+08:00</updated><id>http://localhost:4000/posts/ROS%E5%AD%A6%E4%B9%A0Navigation(%E4%B8%80)</id><content type="html" xml:base="http://localhost:4000/posts/2017-08-07-ROS%E5%AD%A6%E4%B9%A0Navigation(%E4%B8%80)">&lt;p&gt;这次不想从头开始写ROS学习的部分，基础的很多概念都是学习的 &lt;a href=&quot;http://wiki.ros.org/Books/Programming_Robots_with_ROS&quot;&gt;这本书&lt;/a&gt;，里面前面有很清楚的例子，也是围绕indigo这个版本来教学的，资料也非常多，做了一些简单的小bot。例如wander_bot, follow_bot等等。&lt;/p&gt;
 
 &lt;p&gt;但是对于坐标变换、图像处理、路径规划、地图导航等几个之后常用的方面还是了解甚少，所以特意把这几块的学习部分记录下来。&lt;/p&gt;
 
@@ -20,41 +65,101 @@
 &lt;h3 id=&quot;writing-codes&quot;&gt;Writing codes&lt;/h3&gt;
 &lt;p&gt;以&lt;code class=&quot;highlighter-rouge&quot;&gt;base_link&lt;/code&gt;为父节点，我们将&lt;code class=&quot;highlighter-rouge&quot;&gt;base_laser&lt;/code&gt;的数据转换到&lt;code class=&quot;highlighter-rouge&quot;&gt;base_link&lt;/code&gt;上。首先创建一个package，使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;roscpp&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;tf&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;geometry_msgs&lt;/code&gt;.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cd %TOP_DIR_YOUR_CATKIN_WS%/src
-$ catkin_create_pkg robot_setup_tf roscpp tf geometry_msgs
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TOP_DIR_YOUR_CATKIN_WS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;catkin_create_pkg&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;robot_setup_tf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;roscpp&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;geometry_msgs&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h3 id=&quot;broadcasting-a-transform&quot;&gt;Broadcasting a Transform&lt;/h3&gt;
 &lt;p&gt;接下来要创建一个node把 &lt;code class=&quot;highlighter-rouge&quot;&gt;base_laser → base_link&lt;/code&gt; 的变换广播给ROS。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#include &amp;lt;ros/ros.h&amp;gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;ros/ros.h&amp;gt;
 #include &amp;lt;tf/transform_broadcaster.h&amp;gt;
+&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;robot_tf_publisher&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NodeHandle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-int main(int argc, char** argv){
-  ros::init(argc, argv, &quot;robot_tf_publisher&quot;);
-  ros::NodeHandle n;
+  &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Rate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-  ros::Rate r(100);
+  &lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TransformBroadcaster&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;broadcaster&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-  tf::TransformBroadcaster broadcaster;
+  &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()){&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;broadcaster&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sendTransform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StampedTransform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Quaternion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Vector3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)),&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;base_link&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;base_laser&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The tf package provides an implementation of a &lt;strong&gt;tf::TransformBroadcaster&lt;/strong&gt; to help make the task of publishing transforms easier. To use the TransformBroadcaster, we need to include the tf/transform_broadcaster.h header file.&lt;/p&gt;
 
-  while(n.ok()){
-    broadcaster.sendTransform(
-      tf::StampedTransform(
-        tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.1, 0.0, 0.2)),
-        ros::Time::now(),&quot;base_link&quot;, &quot;base_laser&quot;));
-    r.sleep();
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;The tf package provides an implementation of a tf::TransformBroadcaster to help make the task of publishing transforms easier. To use the TransformBroadcaster, we need to include the tf/transform_broadcaster.h header file.&lt;/p&gt;</content><author><name></name></author><summary type="html">这次不想从头开始写ROS学习的部分，基础的很多概念都是学习的这本书，里面前面有很清楚的例子，也是围绕indigo这个版本来教学的，资料也非常多，做了一些简单的小bot。例如wander_bot, follow_bot等等。</summary></entry><entry><title type="html">解决Caffe make runtest失败的方法</title><link href="http://localhost:4000/caffe,/dan/2017/07/05/%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95.html" rel="alternate" type="text/html" title="解决Caffe make runtest失败的方法" /><published>2017-07-05T10:30:00+08:00</published><updated>2017-07-05T10:30:00+08:00</updated><id>http://localhost:4000/caffe,/dan/2017/07/05/%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95</id><content type="html" xml:base="http://localhost:4000/caffe,/dan/2017/07/05/%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95.html">&lt;p&gt;在实验室的服务器上执行make runtest时会出现如下的错误：&lt;/p&gt;
+&lt;p&gt;Sending a transform with a &lt;strong&gt;TransformBroadcaster requires five arguments&lt;/strong&gt;. First, we pass in the rotation transform, which is specified by a btQuaternion for any rotation that needs to occur between the two coordinate frames. In this case, we want to apply no rotation, so we send in a btQuaternion constructed from pitch, roll, and yaw values equal to zero. Second, a btVector3 for any translation that we’d like to apply. We do, however, want to apply a translation, so we create a btVector3 corresponding to the laser’s x offset of 10cm and z offset of 20cm from the robot base. Third, we need to give the transform being published a timestamp, we’ll just stamp it with ros::Time::now(). Fourth, we need to pass the name of the parent node of the link we’re creating, in this case “base_link.” Fifth, we need to pass the name of the child node of the link we’re creating, in this case “base_laser.”&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Failed] SGDSolverTest/2.TestLeastSquaresUpdate, where TypeParam = caffe::GPUDevices&amp;lt;float&amp;gt;
+&lt;h3 id=&quot;using-a-transform&quot;&gt;Using a Transform&lt;/h3&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;ros/ros.h&amp;gt;
+#include &amp;lt;geometry_msgs/PointStamped.h&amp;gt;
+#include &amp;lt;tf/transform_listener.h&amp;gt;
+&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transformPoint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TransformListener&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;//we'll create a point in the base_laser frame that we'd like to transform to the base_link frame
+&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;geometry_msgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PointStamped&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;header&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;frame_id&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;base_laser&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;//we'll just use the most recent transform available for our simple example
+&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;header&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stamp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;//just an arbitrary point in space
+&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;geometry_msgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PointStamped&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;listener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transformPoint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;base_link&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;ROS_INFO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;base_laser: (%.2f, %.2f. %.2f) -----&amp;gt; base_link: (%.2f, %.2f, %.2f) at time %.2f&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;laser_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;base_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base_point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;header&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stamp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toSec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TransformException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ROS_ERROR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Received an exception trying to transform a point from &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;base_laser&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; to &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;base_link&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;: %s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;what&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;robot_tf_listener&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NodeHandle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;tf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TransformListener&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;//we'll transform a point once every second
+&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Timer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;timer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;createTimer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;boost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transformPoint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;boost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;listener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)));&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;ros&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We’ll create a function that, given a TransformListener, takes a point in the “base_laser” frame and transforms it to the “base_link” frame. This function will serve as a callback for the ros::Timer created in the main() of our program and will fire every second.&lt;/p&gt;
+
+&lt;p&gt;Here, we’ll create our point as a &lt;code class=&quot;highlighter-rouge&quot;&gt;geometry_msgs::PointStamped&lt;/code&gt;. The “Stamped” on the end of the message name just means that it includes a header, allowing us to associate both a timestamp and a frame_id with the message. We’ll set the stamp field of the laser_point message to be ros::Time() which is a special time value that allows us to ask the TransformListener for the latest available transform. As for the frame_id field of the header, we’ll set that to be “base_laser” because we’re creating a point in the “base_laser” frame.&lt;/p&gt;
+
+&lt;p&gt;Now that we have the point in the “base_laser” frame we want to transform it into the “base_link” frame. To do this, we’ll use the TransformListener object, and call transformPoint() with three arguments: the name of the frame we want to transform the point to (“base_link” in our case), the point we’re transforming, and storage for the transformed point. So, after the call to transformPoint(), base_point holds the same information as laser_point did before only now in the “base_link” frame.&lt;/p&gt;
+
+&lt;h3 id=&quot;build-code&quot;&gt;Build code&lt;/h3&gt;
+&lt;p&gt;Now that we’ve written our little example, we need to build it. Open up the &lt;code class=&quot;highlighter-rouge&quot;&gt;CMakeLists.txt&lt;/code&gt; file that is autogenerated by roscreate-pkg and add the following lines to the bottom of the file.&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;add_executable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tf_broadcaster&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tf_broadcaster&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cpp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;add_executable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tf_listener&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tf_listener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cpp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;target_link_libraries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tf_broadcaster&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;catkin_LIBRARIES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;target_link_libraries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tf_listener&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;catkin_LIBRARIES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Jim Chen</name></author><summary type="html">这次不想从头开始写ROS学习的部分，基础的很多概念都是学习的 这本书，里面前面有很清楚的例子，也是围绕indigo这个版本来教学的，资料也非常多，做了一些简单的小bot。例如wander_bot, follow_bot等等。</summary></entry><entry><title type="html">解决Caffe make runtest失败的方法</title><link href="http://localhost:4000/posts/2017-07-05-%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95" rel="alternate" type="text/html" title="解决Caffe make runtest失败的方法" /><published>2017-07-05T10:30:00+08:00</published><updated>2017-07-05T10:30:00+08:00</updated><id>http://localhost:4000/posts/%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95</id><content type="html" xml:base="http://localhost:4000/posts/2017-07-05-%E8%A7%A3%E5%86%B3Caffe-make-runtest%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%96%B9%E6%B3%95">&lt;p&gt;在实验室的服务器上执行make runtest时会出现如下的错误：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Failed] SGDSolverTest/2.TestLeastSquaresUpdate, where TypeParam = caffe::GPUDevices&amp;lt;float&amp;gt;
 ...
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这里的报错信息里面显示的是“GPUDevice”而不是“CPUDevice”，这种情况可能是因为配置了&lt;strong&gt;多显卡环境&lt;/strong&gt;，可以使用安装CUDA时运行./deviceQuery时标注的0号GPU(“Device 0”)跑跑测试试试看。使用如下命令：&lt;code class=&quot;highlighter-rouge&quot;&gt;export CUDA_VISIBLE_DEVICES=0&lt;/code&gt;，然后重新 &lt;code class=&quot;highlighter-rouge&quot;&gt;make runtest&lt;/code&gt;。&lt;/p&gt;
 
@@ -71,7 +176,7 @@ int main(int argc, char** argv){
 
 &lt;p&gt;&lt;strong&gt;Makefile.config&lt;/strong&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;## Refer to http://caffe.berkeleyvision.org/installation.html
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;## Refer to http://caffe.berkeleyvision.org/installation.html
 # Contributions simplifying and improving our build system are welcome!
 
 # cuDNN acceleration switch (uncomment to build with cuDNN).
@@ -183,8 +288,7 @@ TEST_GPUID := 0
 
 # enable pretty build (comment to see full commands)
 Q ?= @
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html">在实验室的服务器上执行make runtest时会出现如下的错误：</summary></entry><entry><title type="html">Learn DAN prototxt</title><link href="http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt.html" rel="alternate" type="text/html" title="Learn DAN prototxt" /><published>2017-07-05T10:30:00+08:00</published><updated>2017-07-05T10:30:00+08:00</updated><id>http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt</id><content type="html" xml:base="http://localhost:4000/caffe,/dan/2017/07/05/Learn-DAN-prototxt.html">&lt;h2 id=&quot;about-dan&quot;&gt;About DAN&lt;/h2&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Jim Chen</name></author><summary type="html">在实验室的服务器上执行make runtest时会出现如下的错误：</summary></entry><entry><title type="html">Learn DAN prototxt</title><link href="http://localhost:4000/posts/2017-07-05-Learn-DAN-prototxt" rel="alternate" type="text/html" title="Learn DAN prototxt" /><published>2017-07-05T10:30:00+08:00</published><updated>2017-07-05T10:30:00+08:00</updated><id>http://localhost:4000/posts/Learn-DAN-prototxt</id><content type="html" xml:base="http://localhost:4000/posts/2017-07-05-Learn-DAN-prototxt">&lt;h2 id=&quot;about-dan&quot;&gt;About DAN&lt;/h2&gt;
 &lt;p&gt;DAN (Deep Adaptation Network) was proposed to learn transferable features which generalize well to novel tasks for &lt;code class=&quot;highlighter-rouge&quot;&gt;Domain Adaptation&lt;/code&gt;. In DAN, hidden representa- tions of all task-specific layers are embedded in a reproducing kernel Hilbert space where the mean embeddings of different domain distributions can be explicitly matched. The domain discrepancy is further reduced using an optimal multi-kernel selection method for mean embedding matching.[1]&lt;/p&gt;
 
 &lt;p&gt;Here is the main structure of DAN.&lt;/p&gt;
@@ -197,7 +301,7 @@ Q ?= @
 
 &lt;h2 id=&quot;train_valprototxt&quot;&gt;train_val.prototxt&lt;/h2&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;name: &quot;amazon_to_webcam&quot;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;name: &quot;amazon_to_webcam&quot;
 layer {           # source domain data layer
   name: &quot;source_data&quot;
   type: &quot;ImageData&quot;          # 直接使用 Raw Image 作为输入
@@ -720,12 +824,11 @@ layer {
   }
   include: { phase: TRAIN }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;solverprototxt&quot;&gt;solver.prototxt&lt;/h2&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;net: &quot;./models/DAN/amazon_to_webcam/train_val.prototxt&quot;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;net: &quot;./models/DAN/amazon_to_webcam/train_val.prototxt&quot;
 test_iter: 795    
 test_interval: 300    # 测试间隔。也就是每训练300次，才进行一次测试。
 base_lr: 0.0003       # 基础学习率
@@ -739,8 +842,7 @@ snapshot: 60000
 snapshot_prefix: &quot;./models/DAN/amazon_to_webcam/trained_model&quot;
 solver_mode: GPU
 snapshot_after_train: false
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;test_iter:&lt;/strong&gt;&lt;/p&gt;
 
@@ -759,7 +861,7 @@ snapshot_after_train: false
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;refenrence&quot;&gt;Refenrence&lt;/h2&gt;
-&lt;p&gt;[1] Long M, Cao Y, Wang J, et al. Learning transferable features with deep adaptation networks[C]//International Conference on Machine Learning. 2015: 97-105.&lt;/p&gt;</content><author><name></name></author><summary type="html">About DAN DAN (Deep Adaptation Network) was proposed to learn transferable features which generalize well to novel tasks for Domain Adaptation. In DAN, hidden representa- tions of all task-specific layers are embedded in a reproducing kernel Hilbert space where the mean embeddings of different domain distributions can be explicitly matched. The domain discrepancy is further reduced using an optimal multi-kernel selection method for mean embedding matching.[1]</summary></entry><entry><title type="html">Caffe Learning Notes(4)</title><link href="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(4).html" rel="alternate" type="text/html" title="Caffe Learning Notes(4)" /><published>2017-07-04T20:00:00+08:00</published><updated>2017-07-04T20:00:00+08:00</updated><id>http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(4)</id><content type="html" xml:base="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(4).html">&lt;h1 id=&quot;模块学习layer&quot;&gt;模块学习——Layer&lt;/h1&gt;
+&lt;p&gt;[1] Long M, Cao Y, Wang J, et al. Learning transferable features with deep adaptation networks[C]//International Conference on Machine Learning. 2015: 97-105.&lt;/p&gt;</content><author><name>Jim Chen</name></author><summary type="html">About DAN DAN (Deep Adaptation Network) was proposed to learn transferable features which generalize well to novel tasks for Domain Adaptation. In DAN, hidden representa- tions of all task-specific layers are embedded in a reproducing kernel Hilbert space where the mean embeddings of different domain distributions can be explicitly matched. The domain discrepancy is further reduced using an optimal multi-kernel selection method for mean embedding matching.[1]</summary></entry><entry><title type="html">Caffe Learning Notes(4)</title><link href="http://localhost:4000/posts/2017-07-04-Caffe-Learning-Notes(4)" rel="alternate" type="text/html" title="Caffe Learning Notes(4)" /><published>2017-07-04T20:00:00+08:00</published><updated>2017-07-04T20:00:00+08:00</updated><id>http://localhost:4000/posts/Caffe-Learning-Notes(4)</id><content type="html" xml:base="http://localhost:4000/posts/2017-07-04-Caffe-Learning-Notes(4)">&lt;h1 id=&quot;模块学习layer&quot;&gt;模块学习——Layer&lt;/h1&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/layer_structure.png&quot; alt=&quot;Layer structures&quot; /&gt;&lt;/p&gt;
 
@@ -773,7 +875,7 @@ snapshot_after_train: false
 
 &lt;p&gt;首先来看layer类的构造部分，以及Public部分的函数&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
 class Layer {
  public:
   explicit Layer(const LayerParameter&amp;amp; param)
@@ -789,12 +891,11 @@ class Layer {
       }
     }
   virtual ~Layer() {}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Layer层的主要的参数和成员变量:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; /** The protobuf that stores the layer parameters */
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; /** The protobuf that stores the layer parameters */
  // 层说明参数，从protocal buffers格式的网络结构说明文件中读取
   LayerParameter layer_param_;
   /** The phase: TRAIN or TEST */
@@ -811,14 +912,13 @@ class Layer {
    *  the objective function. */
    // 每一个top blob中是否有非零的权值
   vector&amp;lt;Dtype&amp;gt; loss_;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;首先获得当前网络的phase，是&lt;code class=&quot;highlighter-rouge&quot;&gt;train&lt;/code&gt;还是&lt;code class=&quot;highlighter-rouge&quot;&gt;test&lt;/code&gt;，在初始化列表初始化&lt;code class=&quot;highlighter-rouge&quot;&gt;LayerParameter&lt;/code&gt;,之后&lt;code class=&quot;highlighter-rouge&quot;&gt;blobs_&lt;/code&gt;这里存放的是一个指向blob类的&lt;code class=&quot;highlighter-rouge&quot;&gt;shared_ptr&lt;/code&gt;指针的一个vector，在这里是申请空间，然后将传入的&lt;code class=&quot;highlighter-rouge&quot;&gt;layer_param&lt;/code&gt;中的blob拷贝过来。&lt;/p&gt;
 
 &lt;p&gt;初始化函数SetUp()&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
    * @brief 实现每个layer对象的setup函数
    * @param bottom 
    * 层的输入数据，blob中的存储空间已申请
@@ -840,8 +940,7 @@ class Layer {
     Reshape(bottom, top);
     SetLossWeights(top);
   }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这里是&lt;code class=&quot;highlighter-rouge&quot;&gt;Setup&lt;/code&gt;函数，首先check 这个bottom和top的blob是否正确，再调用&lt;code class=&quot;highlighter-rouge&quot;&gt;Layersetup&lt;/code&gt;对每一具体的层做进一步设置，之后再做reshape来设置top blobs和internal buffer。最后再设置loss weight multiplier 的blob对每一个非零的loss和weight，一般这个方法被继承之后是不会被重写的。&lt;/p&gt;
 
@@ -851,7 +950,7 @@ class Layer {
 
 &lt;p&gt;Reshape函数完成top blob形状的设置并为其分配存储空间。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virtual inline bool ShareInParallel() 
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virtual inline bool ShareInParallel() 
 inline bool IsShared() const
 inline void SetShared(bool is_shared)
 
@@ -881,12 +980,11 @@ inline void SetShared(bool is_shared)
       
   virtual void Reshape(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
       const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) = 0;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;前向传播函数Forward和反向传播函数Backward。这两个函数非虚函数，它们内部会调用如下虚函数完成数据前向传递和误差反向传播，根据执行环境的不同每个子类Layer必须重写CPU和GPU版本&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  /** @brief Using the CPU device, compute the layer output. */
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  /** @brief Using the CPU device, compute the layer output. */
   virtual void Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
       const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) = 0;
   /**
@@ -917,20 +1015,17 @@ inline void SetShared(bool is_shared)
     // LOG(WARNING) &amp;lt;&amp;lt; &quot;Using CPU code as backup.&quot;;
     Backward_cpu(top, propagate_down, bottom);
   }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这个函数被setup调用，主要是check bottom和top 的blob是否match，这里面用了上面提到的&lt;code class=&quot;highlighter-rouge&quot;&gt;ExactBottomBlobs()&lt;/code&gt;等函数&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virtual void CheckBlobCounts(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom, const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top)
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;virtual void CheckBlobCounts(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom, const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SetLoss&lt;/code&gt;是非常重要的一个步骤，是被&lt;code class=&quot;highlighter-rouge&quot;&gt;SetUp&lt;/code&gt;调用来初始化top bottom的weights，并且存储非零的loss weights 在diff blob里面&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;inline void SetLossWeights(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top)
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;inline void SetLossWeights(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;data-layer&quot;&gt;Data Layer&lt;/h2&gt;
 
@@ -953,7 +1048,7 @@ inline void SetShared(bool is_shared)
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Data_layer&lt;/code&gt;头文件如下：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#include &amp;lt;string&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#include &amp;lt;string&amp;gt;
 #include &amp;lt;utility&amp;gt;
 #include &amp;lt;vector&amp;gt;
 #include &quot;hdf5.h&quot;
@@ -968,8 +1063,7 @@ inline void SetShared(bool is_shared)
 #include &quot;caffe/proto/caffe.pb.h&quot;
 #include &quot;caffe/util/blocking_queue.hpp&quot;
 #include &quot;caffe/util/db.hpp&quot;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;还有几个跟data相关的头文件比如data_read.hpp,data_transformer.hpp
 其中data_reader主要是负责数据的读取，传送到data layer中。并且对于每一个source，都会开一一起独立的reading thread读取线程，几十有多个solver在并行的跑。比如在多GPU训练的时候，可以保证对于数据库的读取是顺序的。&lt;/p&gt;
@@ -978,17 +1072,16 @@ inline void SetShared(bool is_shared)
 
 &lt;p&gt;其核心的函数如下，这里总共有5个常见的Transform函数，其中所有函数的第二部分是相同的，都是一个目标blob，而输入根据输入的情况可以有所选择，可以是blob,也可以是opencv的mat 结构，或者proto中定义的datum结构。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void Transform(const Datum&amp;amp; datum, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void Transform(const Datum&amp;amp; datum, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
 void Transform(const vector&amp;lt;Datum&amp;gt; &amp;amp; datum_vector, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
 void Transform(const vector&amp;lt;cv::Mat&amp;gt; &amp;amp; mat_vector, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
 void Transform(const cv::Mat&amp;amp; cv_img, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
 void Transform(Blob&amp;lt;Dtype&amp;gt;* input_blob, Blob&amp;lt;Dtype&amp;gt;* transformed_blob);
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;TransformationParameter&lt;/code&gt;是该类构造器中需要传入的一些变形参数，相关的操作定义在proto中，摘录如下,可以看到总共有sacle, mirror, crop_size, mean_file, mean_value, force_color, force_grey 共7个相关操作。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;message TransformationParameter {
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;message TransformationParameter {
   optional float scale = 1 [default = 1];
   optional bool mirror = 2 [default = false];
   optional uint32 crop_size = 3 [default = 0];
@@ -997,12 +1090,11 @@ void Transform(Blob&amp;lt;Dtype&amp;gt;* input_blob, Blob&amp;lt;Dtype&amp;gt;*
   optional bool force_color = 6 [default = false];
   optional bool force_gray = 7 [default = false];
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;最重要的就是类内的&lt;code class=&quot;highlighter-rouge&quot;&gt;layerSetup&lt;/code&gt;.首先我们来看DataLayer的&lt;code class=&quot;highlighter-rouge&quot;&gt;DataLayerSetUp&lt;/code&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void DataLayer&amp;lt;Dtype&amp;gt;::DataLayerSetUp(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void DataLayer&amp;lt;Dtype&amp;gt;::DataLayerSetUp(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
       const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
   const int batch_size = this-&amp;gt;layer_param_.data_param().batch_size();
   //获得相应的datum，用来初始化top blob
@@ -1028,8 +1120,7 @@ void Transform(Blob&amp;lt;Dtype&amp;gt;* input_blob, Blob&amp;lt;Dtype&amp;gt;*
     }
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;还有很多其他的&lt;code class=&quot;highlighter-rouge&quot;&gt;Data_Layer&lt;/code&gt;的初始化，可以参考：&lt;a href=&quot;http://www.cnblogs.com/louyihang-loves-baiyan/p/5153155.html&quot;&gt;Caffe源码解析4：Data_layer&lt;/a&gt;&lt;/p&gt;
 
@@ -1041,7 +1132,7 @@ void Transform(Blob&amp;lt;Dtype&amp;gt;* input_blob, Blob&amp;lt;Dtype&amp;gt;*
 &lt;p&gt;&lt;strong&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;BaseConvolutionLayer&lt;/code&gt;&lt;/strong&gt;
 其继承自Layer，是一个卷积以及反卷积操作的基类，首先我们来看BaseConvolutionLayer的LayerSetUp函数&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void BaseConvolutionLayer&amp;lt;Dtype&amp;gt;::LayerSetUp(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void BaseConvolutionLayer&amp;lt;Dtype&amp;gt;::LayerSetUp(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
       const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top)
   //首先这里主要是在配置卷积kernel 的size,padding,stride以及inputs
   ConvolutionParameter conv_param = this-&amp;gt;layer_param_.convolution_param();
@@ -1056,21 +1147,19 @@ void Transform(Blob&amp;lt;Dtype&amp;gt;* input_blob, Blob&amp;lt;Dtype&amp;gt;*
   // 设置kernel的dimensions
   kernel_shape_.Reshape(spatial_dim_blob_shape);
   int* kernel_shape_data = kernel_shape_.mutable_cpu_data();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;接着是设置相应的stride dimensions，对于2D，设置在h和w方向上的stride，对于kernel的pad也做相应设置&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pad_.Reshape(spatial_dim_blob_shape);
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pad_.Reshape(spatial_dim_blob_shape);
 int* pad_data = pad_.mutable_cpu_data();
 pad_data[0] = conv_param.pad_h();
 pad_data[1] = conv_param.pad_w();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;接下来是对&lt;code class=&quot;highlighter-rouge&quot;&gt;widths&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;bias&lt;/code&gt; 做设置和填充，其中blob[0]里面存放的是filter weights,而blob[1]里面存放的是biases，当然bias是可选的，也可以没有&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//设置相应的shape，并检查
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//设置相应的shape，并检查
 vector&amp;lt;int&amp;gt; weight_shape(2);
 weight_shape[0] = conv_out_channels_;
 weight_shape[1] = conv_in_channels_ / group_;
@@ -1090,8 +1179,7 @@ if (bias_term_) {
       this-&amp;gt;layer_param_.convolution_param().bias_filler()));
   bias_filler-&amp;gt;Fill(this-&amp;gt;blobs_[1].get());
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;ConvolutionLayer&lt;/code&gt;&lt;/strong&gt; 继承了&lt;code class=&quot;highlighter-rouge&quot;&gt;BaseConvolutionLayer&lt;/code&gt;，主要作用就是将一副image做卷积操作，使用学到的filter的参数和biaes。同时在Caffe里面，卷积操作做了优化，变成了一个矩阵相乘的操作。其中有两个比较主要的函数是&lt;code class=&quot;highlighter-rouge&quot;&gt;im2col&lt;/code&gt;以及&lt;code class=&quot;highlighter-rouge&quot;&gt;col2im&lt;/code&gt;。&lt;/p&gt;
 
@@ -1107,7 +1195,7 @@ if (bias_term_) {
 
 &lt;p&gt;ConvolutionLayer里面，主要重写了Forward_cpu和Backward_cpu&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void ConvolutionLayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void ConvolutionLayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
       const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
   const Dtype* weight = this-&amp;gt;blobs_[0]-&amp;gt;cpu_data();
   for (int i = 0; i &amp;lt; bottom.size(); ++i) {
@@ -1123,8 +1211,7 @@ if (bias_term_) {
     }
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;可以看到其实这里面他调用了forward_cpu_gemm，而这个函数内部又调用了math_function里面的caffe_cpu_gemm的通用矩阵相乘接口，GEMM的全称是General Matrix Matrix Multiply。其基本形式如下：&lt;/p&gt;
 
@@ -1132,7 +1219,7 @@ if (bias_term_) {
   &lt;p&gt;C=alpha∗op(A)∗op(B)+beta∗C,&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
 void ConvolutionLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top,
       const vector&amp;lt;bool&amp;gt;&amp;amp; propagate_down, const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom) {
    //反向传播梯度误差
@@ -1167,8 +1254,7 @@ void ConvolutionLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blo
     }
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;neuron-layer&quot;&gt;Neuron Layer&lt;/h2&gt;
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Neuron Layer&lt;/code&gt;，顾名思义这里就是神经元，激活函数的相应层。我们知道在blob进入激活函数之前和之后他的size是不会变的，而且激活值也就是输出 y 只依赖于相应的输入 x 。在Caffe里面所有的layer的实现都放在src文件夹下的layer文件夹中，基本上很多文章里应用到的layer类型它都有cpu和cuda的实现。&lt;/p&gt;
@@ -1197,7 +1283,7 @@ void ConvolutionLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blo
 
 &lt;p&gt;其在cafffe中的forward和backward函数为&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
 void ReLULayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
     const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
   const Dtype* bottom_data = bottom[0]-&amp;gt;cpu_data();
@@ -1226,8 +1312,7 @@ void ReLULayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&amp;l
     }
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;其余包括Sigmoid可以参考&lt;a href=&quot;http://www.cnblogs.com/louyihang-loves-baiyan/p/5200850.html&quot;&gt;Caffe源码解析6：Neuron_Layer&lt;/a&gt;&lt;/p&gt;
 
@@ -1238,7 +1323,7 @@ void ReLULayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&amp;l
 
 &lt;p&gt;其forward_cpu和backward_cpu为:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
 void DropoutLayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
     const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
   const Dtype* bottom_data = bottom[0]-&amp;gt;cpu_data();
@@ -1274,15 +1359,14 @@ void DropoutLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&am
     }
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h3 id=&quot;polling-layer&quot;&gt;Polling Layer&lt;/h3&gt;
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Pooling&lt;/code&gt;层一般在网络中是跟在Conv卷积层之后，做采样操作，其实是为了进一步缩小feature map，同时也能增大神经元的视野。在Caffe中，pooling层属于vision_layer的一部分，其相关的定义也在vision_layer.hpp的头文件中。Pooling层的相关操作比较少，在Caffe的自带模式下只有Max pooling和Average poooling两种&lt;/p&gt;
 
 &lt;p&gt;caffe中Pooling的操作相对比较少，结构也简单，首先看它的Forward_cpu函数，在forward的时候根据相应的Pooling_method选择相应的pooling方法&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void PoolingLayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void PoolingLayer&amp;lt;Dtype&amp;gt;::Forward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom,
       const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top) {
   const Dtype* bottom_data = bottom[0]-&amp;gt;cpu_data();
   Dtype* top_data = top[0]-&amp;gt;mutable_cpu_data();
@@ -1379,8 +1463,7 @@ void DropoutLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&am
   default:
     LOG(FATAL) &amp;lt;&amp;lt; &quot;Unknown pooling method.&quot;;
   }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;对于误差的反向传导
 对于pooling层的误差传到，根据下式&lt;/p&gt;
@@ -1391,7 +1474,7 @@ void DropoutLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&am
 
 &lt;p&gt;具体的计算推导过程请结合&lt;a href=&quot;http://www.cnblogs.com/tornadomeet/p/3468450.html&quot;&gt;http://www.cnblogs.com/tornadomeet/p/3468450.html&lt;/a&gt;有详细的推导过程，结合代码中主循环中的最里项会更清晰的明白&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
 void PoolingLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; top,
       const vector&amp;lt;bool&amp;gt;&amp;amp; propagate_down, const vector&amp;lt;Blob&amp;lt;Dtype&amp;gt;*&amp;gt;&amp;amp; bottom) {
   if (!propagate_down[0]) {
@@ -1468,8 +1551,7 @@ void PoolingLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&am
     LOG(FATAL) &amp;lt;&amp;lt; &quot;Unknown pooling method.&quot;;
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html">模块学习——Layer</summary></entry><entry><title type="html">Caffe Learning Notes(3)</title><link href="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(3).html" rel="alternate" type="text/html" title="Caffe Learning Notes(3)" /><published>2017-07-04T17:00:00+08:00</published><updated>2017-07-04T17:00:00+08:00</updated><id>http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(3)</id><content type="html" xml:base="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(3).html">&lt;h1 id=&quot;模块学习blob类&quot;&gt;模块学习——Blob类&lt;/h1&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Jim Chen</name></author><summary type="html">模块学习——Layer</summary></entry><entry><title type="html">Caffe Learning Notes(3)</title><link href="http://localhost:4000/posts/2017-07-04-Caffe-Learning-Notes(3)" rel="alternate" type="text/html" title="Caffe Learning Notes(3)" /><published>2017-07-04T17:00:00+08:00</published><updated>2017-07-04T17:00:00+08:00</updated><id>http://localhost:4000/posts/Caffe-Learning-Notes(3)</id><content type="html" xml:base="http://localhost:4000/posts/2017-07-04-Caffe-Learning-Notes(3)">&lt;h1 id=&quot;模块学习blob类&quot;&gt;模块学习——Blob类&lt;/h1&gt;
 
 &lt;p&gt;主要参考自 &lt;a href=&quot;http://www.cnblogs.com/louyihang-loves-baiyan/&quot;&gt;楼燚(yì)航的blog——Caffe源码解析1：Blob&lt;/a&gt;&lt;/p&gt;
 
@@ -1487,29 +1569,27 @@ void PoolingLayer&amp;lt;Dtype&amp;gt;::Backward_cpu(const vector&amp;lt;Blob&am
 &lt;/ol&gt;
 
 &lt;h2 id=&quot;主要变量&quot;&gt;主要变量&lt;/h2&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;shared_ptr&amp;lt;SyncedMemory&amp;gt; data_;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;shared_ptr&amp;lt;SyncedMemory&amp;gt; data_;
 shared_ptr&amp;lt;SyncedMemory&amp;gt; diff_;
 shared_ptr&amp;lt;SyncedMemory&amp;gt; shape_data_;
 vector&amp;lt;int&amp;gt; shape_;
 int count_;
 int capacity_;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Blob只是一个基本的数据结构，因此内部的变量相对较少，首先是 &lt;code class=&quot;highlighter-rouge&quot;&gt;data_&lt;/code&gt; 指针，指针类型是 &lt;code class=&quot;highlighter-rouge&quot;&gt;shared_ptr&lt;/code&gt; ，属于 &lt;code class=&quot;highlighter-rouge&quot;&gt;boost&lt;/code&gt; 库的一个智能指针，这一部分主要用来申请内存存储 &lt;code class=&quot;highlighter-rouge&quot;&gt;data&lt;/code&gt; ， &lt;code class=&quot;highlighter-rouge&quot;&gt;data&lt;/code&gt; 主要是正向传播的时候用的。同理， &lt;code class=&quot;highlighter-rouge&quot;&gt;diff_&lt;/code&gt; 主要用来存储偏差，update data ， &lt;code class=&quot;highlighter-rouge&quot;&gt;shape_data&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;shape_&lt;/code&gt; 都是存储Blob的形状，一个是老版本一个是新版本。 &lt;code class=&quot;highlighter-rouge&quot;&gt;count&lt;/code&gt; 表示Blob中的元素个数，也就是 &lt;code class=&quot;highlighter-rouge&quot;&gt;个数*通道数*高度*宽度&lt;/code&gt; , &lt;code class=&quot;highlighter-rouge&quot;&gt;capacity&lt;/code&gt; 表示当前的元素个数，因为&lt;code class=&quot;highlighter-rouge&quot;&gt;Blob&lt;/code&gt;可能会reshape。&lt;/p&gt;
 
 &lt;h2 id=&quot;主要函数&quot;&gt;主要函数&lt;/h2&gt;
 &lt;h3 id=&quot;reshape&quot;&gt;Reshape()&lt;/h3&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  void Reshape(const int num, const int channels, const int height, const int width);
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  void Reshape(const int num, const int channels, const int height, const int width);
   void Reshape(const vector&amp;lt;int&amp;gt;&amp;amp; shape);
   void Reshape(const BlobShape&amp;amp; shape);
   void ReshapeLike(const Blob&amp;amp; other);
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;Blob中除了基础的构造函数，还有大量的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Reshape&lt;/code&gt; 函数， &lt;code class=&quot;highlighter-rouge&quot;&gt;Reshape&lt;/code&gt; 函数在Layer中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;reshape&lt;/code&gt; 或者 &lt;code class=&quot;highlighter-rouge&quot;&gt;forward&lt;/code&gt; 操作中来adjust dimension。同时在改变&lt;code class=&quot;highlighter-rouge&quot;&gt;Blob&lt;/code&gt;大小时，内存将会被重新分配，如果内存大小不够了，并且额外的内存将不会被释放。对input的blob进行reshape,如果立马调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Net::Backward&lt;/code&gt; 是会出错的，因为reshape之后，要么 &lt;code class=&quot;highlighter-rouge&quot;&gt;Net::forward&lt;/code&gt; 或者 &lt;code class=&quot;highlighter-rouge&quot;&gt;Net::Reshape&lt;/code&gt; 就会被调用来将新的input shape传播到高层。&lt;/p&gt;
 
 &lt;h3 id=&quot;count&quot;&gt;count()&lt;/h3&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;inline int shape(int index) const {
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;inline int shape(int index) const {
     return shape_[CanonicalAxisIndex(index)];
   }
   inline int num_axes() const { return shape_.size(); }
@@ -1520,8 +1600,7 @@ int capacity_;
   inline int count(int start_axis) const {
     return count(start_axis, num_axes());
   }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;Blob类里面有重载很多个count()函数，主要还是为了统计Blob的容量（volume），或者是某一片（slice），从某个axis到具体某个axis的shape乘积。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;并且Blob的Index是可以从负坐标开始读的，这一点跟Python好像&lt;/strong&gt;&lt;/p&gt;
@@ -1529,16 +1608,15 @@ int capacity_;
 &lt;p&gt;对于Blob中的4个基本变量 &lt;code class=&quot;highlighter-rouge&quot;&gt;num, channel, height, width&lt;/code&gt; 可以直接通过shape(0),shape(1),shape(2),shape(3)来访问。&lt;/p&gt;
 
 &lt;h3 id=&quot;data--diff&quot;&gt;Data &amp;amp; Diff&lt;/h3&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;inline Dtype data_at(const int n, const int c, const int h, const int w)
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;inline Dtype data_at(const int n, const int c, const int h, const int w)
 inline Dtype diff_at(const int n, const int c, const int h, const int w)
 inline Dtype data_at(const vector&amp;lt;int&amp;gt;&amp;amp; index)
 inline Dtype diff_at(const vector&amp;lt;int&amp;gt;&amp;amp; index)
 inline const shared_ptr&amp;lt;SyncedMemory&amp;gt;&amp;amp; data()
 inline const shared_ptr&amp;lt;SyncedMemory&amp;gt;&amp;amp; diff()
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;这一部分函数主要通过给定的位置访问数据，根据位置计算与数据起始的偏差offset，在通过cpu_data*指针获得地址。下面几个函数都是获得&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const Dtype* cpu_data() const;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const Dtype* cpu_data() const;
 void set_cpu_data(Dtype* data);
 const int* gpu_shape() const;
 const Dtype* gpu_data() const;
@@ -1548,12 +1626,11 @@ Dtype* mutable_cpu_data();
 Dtype* mutable_gpu_data();
 Dtype* mutable_cpu_diff();
 Dtype* mutable_gpu_diff();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;可以看到这里有data和diff两类数据，&lt;strong&gt;而这个diff就是我们所熟知的偏差，前者主要存储前向传递的数据，而后者存储的是反向传播中的梯度&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;update&quot;&gt;Update()&lt;/h3&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void Blob&amp;lt;Dtype&amp;gt;::Update() {
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void Blob&amp;lt;Dtype&amp;gt;::Update() {
   // We will perform update based on where the data is located.
   switch (data_-&amp;gt;head()) {
   case SyncedMemory::HEAD_AT_CPU:
@@ -1577,22 +1654,19 @@ Dtype* mutable_gpu_diff();
     LOG(FATAL) &amp;lt;&amp;lt; &quot;Syncedmem not initialized.&quot;;
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;这个里面核心的一句话就是&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;caffe_axpy&amp;lt;Dtype&amp;gt;(count_, Dtype(-1),
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;caffe_axpy&amp;lt;Dtype&amp;gt;(count_, Dtype(-1),
         static_cast&amp;lt;const Dtype*&amp;gt;(diff_-&amp;gt;cpu_data()),
         static_cast&amp;lt;Dtype*&amp;gt;(data_-&amp;gt;mutable_cpu_data()));  
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这句话是在 &lt;code class=&quot;highlighter-rouge&quot;&gt;include/caffe/util/math_function.cpp&lt;/code&gt; 文件中&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void caffe_axpy&amp;lt;float&amp;gt;(const int N, const float alpha, const float* X,
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void caffe_axpy&amp;lt;float&amp;gt;(const int N, const float alpha, const float* X,
     float* Y) { cblas_saxpy(N, alpha, X, 1, Y, 1); }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;可以看到这一段调用了cblas库的方法&lt;/strong&gt;。实现的功能是&lt;/p&gt;
 
@@ -1604,14 +1678,13 @@ Y=alpha∗X+beta∗Y
 
 &lt;h3 id=&quot;norm&quot;&gt;norm&lt;/h3&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Dtype asum_data() const;//计算data的L1范数
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Dtype asum_data() const;//计算data的L1范数
 Dtype asum_diff() const;//计算diff的L1范数
 Dtype sumsq_data() const;//计算data的L2范数
 Dtype sumsq_diff() const;//计算diff的L2范数
 void scale_data(Dtype scale_factor);//将data部分乘以一个因子
 void scale_diff(Dtype scale_factor);//将diff部分乘一个因子
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h1 id=&quot;模块学习syncedmemory&quot;&gt;模块学习——SyncedMemory&lt;/h1&gt;
 &lt;p&gt;看到SyncedMem就知道，这是在做内存同步的操作。这类个类的代码比较少，但是作用是非常明显的。文件对应着syncedmem.hpp,着syncedmem.cpp&lt;/p&gt;
@@ -1619,7 +1692,7 @@ void scale_diff(Dtype scale_factor);//将diff部分乘一个因子
 &lt;p&gt;首先是两个全局的内联函数。如果机器是支持GPU的并且安装了cuda，通过cudaMallocHost分配的host memory将会被pinned，&lt;strong&gt;这里我谷歌了一下，pinned的意思就是内存不会被paged out，我们知道内存里面是由页作为基本的管理单元。分配的内存可以常驻在内存空间中对效率是有帮助的，空间不会被别的进程所抢占。&lt;/strong&gt;同样如果内存越大，能被分配的Pinned内存自然也越大。&lt;strong&gt;还有一点是，对于单一的GPU而言提升并不会太显著，但是对于多个GPU的并行而言可以显著提高稳定性。&lt;/strong&gt; [1]&lt;/p&gt;
 
 &lt;h2 id=&quot;inference&quot;&gt;Inference&lt;/h2&gt;
-&lt;p&gt;[1] http://www.cnblogs.com/louyihang-loves-baiyan/p/5150554.html&lt;/p&gt;</content><author><name></name></author><summary type="html">模块学习——Blob类</summary></entry><entry><title type="html">Caffe Learning Notes(2)</title><link href="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(2).html" rel="alternate" type="text/html" title="Caffe Learning Notes(2)" /><published>2017-07-04T12:00:00+08:00</published><updated>2017-07-04T12:00:00+08:00</updated><id>http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(2)</id><content type="html" xml:base="http://localhost:4000/caffe/2017/07/04/Caffe-Learning-Notes(2).html">&lt;h1 id=&quot;模块学习protocol-buffer&quot;&gt;模块学习——Protocol Buffer&lt;/h1&gt;
+&lt;p&gt;[1] http://www.cnblogs.com/louyihang-loves-baiyan/p/5150554.html&lt;/p&gt;</content><author><name>Jim Chen</name></author><summary type="html">模块学习——Blob类</summary></entry><entry><title type="html">Caffe Learning Notes(2)</title><link href="http://localhost:4000/posts/2017-07-04-Caffe-Learning-Notes(2)" rel="alternate" type="text/html" title="Caffe Learning Notes(2)" /><published>2017-07-04T12:00:00+08:00</published><updated>2017-07-04T12:00:00+08:00</updated><id>http://localhost:4000/posts/Caffe-Learning-Notes(2)</id><content type="html" xml:base="http://localhost:4000/posts/2017-07-04-Caffe-Learning-Notes(2)">&lt;h1 id=&quot;模块学习protocol-buffer&quot;&gt;模块学习——Protocol Buffer&lt;/h1&gt;
 &lt;p&gt;除了清晰的代码结构，让Caffe变得易用更应该归功于Google Protocol Buffer的使用。Google Protocol Buffer是Google开发的一个用于serializing结构化数据的开源工具:&lt;/p&gt;
 
 &lt;blockquote&gt;
@@ -1646,7 +1719,7 @@ Reference: &lt;a href=&quot;http://alanse7en.github.io/caffedai-ma-jie-xi-2/&quo
 
 &lt;p&gt;解析这些标志的代码在caffe.cpp中的main()中调用了/CAFFE_ROOT/src/common.cpp中的GlobalInit(&amp;amp;argc, &amp;amp;argv)函数：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void GlobalInit(int* pargc, char*** pargv) {
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void GlobalInit(int* pargc, char*** pargv) {
   // Google flags.
   ::gflags::ParseCommandLineFlags(pargc, pargv, true);
   // Google logging.
@@ -1654,18 +1727,16 @@ Reference: &lt;a href=&quot;http://alanse7en.github.io/caffedai-ma-jie-xi-2/&quo
   // Provide a backtrace on segfault.
   ::google::InstallFailureSignalHandler();
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;register-brew-function&quot;&gt;Register Brew Function&lt;/h2&gt;
 &lt;p&gt;Caffe在Command Line Interfaces中一共提供了4种功能:&lt;code class=&quot;highlighter-rouge&quot;&gt;train&lt;/code&gt;/&lt;code class=&quot;highlighter-rouge&quot;&gt;test&lt;/code&gt;/&lt;code class=&quot;highlighter-rouge&quot;&gt;time&lt;/code&gt;/&lt;code class=&quot;highlighter-rouge&quot;&gt;device_query&lt;/code&gt;，分别对应着四个函数，这四个函数的调用是通过一个叫做&lt;code class=&quot;highlighter-rouge&quot;&gt;g_brew_map&lt;/code&gt;的全局变量来完成的：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// A simple registry for caffe commands.
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// A simple registry for caffe commands.
 typedef int (*BrewFunction)();
 typedef std::map&amp;lt;caffe::string, BrewFunction&amp;gt; BrewMap;
 BrewMap g_brew_map;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;g_brew_map&lt;/code&gt;是一个key为&lt;code class=&quot;highlighter-rouge&quot;&gt;string&lt;/code&gt;类型，value为&lt;code class=&quot;highlighter-rouge&quot;&gt;BrewFunction&lt;/code&gt;类型的一个map类型的全局变量，&lt;code class=&quot;highlighter-rouge&quot;&gt;BrewFunction&lt;/code&gt;是一个函数指针类型，指向的是参数为空，返回值为int的函数，也就是&lt;code class=&quot;highlighter-rouge&quot;&gt;train&lt;/code&gt;/&lt;code class=&quot;highlighter-rouge&quot;&gt;test&lt;/code&gt;/&lt;code class=&quot;highlighter-rouge&quot;&gt;time&lt;/code&gt;/&lt;code class=&quot;highlighter-rouge&quot;&gt;device_query&lt;/code&gt;这四个函数的类型。在&lt;code class=&quot;highlighter-rouge&quot;&gt;train&lt;/code&gt;等四个函数实现的后面都紧跟着这样一句宏的调用：RegisterBrewFunction(train);&lt;/p&gt;
 
@@ -1675,20 +1746,18 @@ BrewMap g_brew_map;
 
 &lt;h2 id=&quot;train-函数&quot;&gt;train() 函数&lt;/h2&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; CHECK_GT(FLAGS_solver.size(), 0) &amp;lt;&amp;lt; &quot;Need a solver definition to train.&quot;;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; CHECK_GT(FLAGS_solver.size(), 0) &amp;lt;&amp;lt; &quot;Need a solver definition to train.&quot;;
 CHECK(!FLAGS_snapshot.size() || !FLAGS_weights.size())
     &amp;lt;&amp;lt; &quot;Give a snapshot to resume training or weights to finetune &quot;
     &quot;but not both.&quot;;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这段代码的第一行使用了&lt;code class=&quot;highlighter-rouge&quot;&gt;glog&lt;/code&gt;的&lt;code class=&quot;highlighter-rouge&quot;&gt;CHECK_GT&lt;/code&gt;宏（含义为check greater than），检查&lt;code class=&quot;highlighter-rouge&quot;&gt;FLAGS_solver&lt;/code&gt;的size是否大于0，如果小于或等于0则输出提示：”Need a solver definition to train”。&lt;code class=&quot;highlighter-rouge&quot;&gt;FLAGS_solver&lt;/code&gt;是最开始通过&lt;code class=&quot;highlighter-rouge&quot;&gt;DEFINE_string&lt;/code&gt;定义的标志，如果我们希望训练一个模型，那么自然应该应该提供对应的solver定义文件的路径，这一句话正是在确保我们提供了这样的路径。这样的检查语句在后续的代码中会经常出现，将不再一一详细解释，如果有不清楚含义的&lt;code class=&quot;highlighter-rouge&quot;&gt;glog&lt;/code&gt;宏可以去看看文档。 与第一行代码类似，第二行代码是确保用户没有同时提供 snapshot 和 weights 参数，这两个参数都是继续之前的训练或者进行fine-tuning的，如果同时指明了这两个标志，则不知道到底应该从哪个路径的文件去读入模型的相关参数更为合适。&lt;/p&gt;
 
 &lt;p&gt;然后出现了 &lt;code class=&quot;highlighter-rouge&quot;&gt;SolverParameter solver_param&lt;/code&gt; 的声明和解析的代码：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;caffe::SolverParameter solver_param;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;caffe::SolverParameter solver_param;
 caffe::ReadSolverParamsFromTextFileOrDie(FLAGS_solver, &amp;amp;solver_param);
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SolverParameter&lt;/code&gt;是通过Google Protocol Buffer自动生成的一个类，而具体的解析函数将在下一部分具体解释。&lt;/p&gt;
 
@@ -1701,7 +1770,7 @@ caffe::ReadSolverParamsFromTextFileOrDie(FLAGS_solver, &amp;amp;solver_param);
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  // If the gpus flag is not provided, allow the mode and device to be set
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  // If the gpus flag is not provided, allow the mode and device to be set
   // in the solver prototxt.
   if (FLAGS_gpu.size() == 0
       &amp;amp;&amp;amp; solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {
@@ -1724,15 +1793,14 @@ caffe::ReadSolverParamsFromTextFileOrDie(FLAGS_solver, &amp;amp;solver_param);
       s &amp;lt;&amp;lt; (i ? &quot;, &quot; : &quot;&quot;) &amp;lt;&amp;lt; gpus[i];
     }
     LOG(INFO) &amp;lt;&amp;lt; &quot;Using GPUs &quot; &amp;lt;&amp;lt; s.str();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;首先是判断用户在Command Line中是否输入了gpu相关的参数，如果没有(FLAGS_gpu.size()==0)但是用户在solver的prototxt定义中提供了相关的参数，那就把相关的参数放到FLAGS_gpu中，如果用户仅仅是选择了在solver的prototxt定义中选择了GPU模式，但是没有指明具体的gpu_id，那么就默认设置为0。&lt;/p&gt;
 
 &lt;p&gt;接下来的代码则通过一个get_gpus的函数，将存放在FLAGS_gpu中的string转成了一个vector，并完成了具体的设置。[1]&lt;/p&gt;
 
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-&lt;p&gt;[1] http://alanse7en.github.io/caffedai-ma-3/&lt;/p&gt;</content><author><name></name></author><summary type="html">模块学习——Protocol Buffer 除了清晰的代码结构，让Caffe变得易用更应该归功于Google Protocol Buffer的使用。Google Protocol Buffer是Google开发的一个用于serializing结构化数据的开源工具:</summary></entry><entry><title type="html">Caffe Learning Notes(1)</title><link href="http://localhost:4000/caffe/2017/07/03/Caffe-Learning-Notes(1).html" rel="alternate" type="text/html" title="Caffe Learning Notes(1)" /><published>2017-07-03T20:15:00+08:00</published><updated>2017-07-03T20:15:00+08:00</updated><id>http://localhost:4000/caffe/2017/07/03/Caffe-Learning-Notes(1)</id><content type="html" xml:base="http://localhost:4000/caffe/2017/07/03/Caffe-Learning-Notes(1).html">&lt;p&gt;之前一直在学习&lt;em&gt;Transfer Learning&lt;/em&gt;，看到&lt;em&gt;DAN&lt;/em&gt;和&lt;em&gt;RTN&lt;/em&gt;的源代码都是用Caffe写的，所以趁此机会来学习一下Caffe的源代码，为了之后能自己写出来自己的类。&lt;/p&gt;
+&lt;p&gt;[1] http://alanse7en.github.io/caffedai-ma-3/&lt;/p&gt;</content><author><name>Jim Chen</name></author><summary type="html">模块学习——Protocol Buffer 除了清晰的代码结构，让Caffe变得易用更应该归功于Google Protocol Buffer的使用。Google Protocol Buffer是Google开发的一个用于serializing结构化数据的开源工具:</summary></entry><entry><title type="html">Caffe Learning Notes(1)</title><link href="http://localhost:4000/posts/2017-07-03-Caffe-Learning-Notes(1)" rel="alternate" type="text/html" title="Caffe Learning Notes(1)" /><published>2017-07-03T20:15:00+08:00</published><updated>2017-07-03T20:15:00+08:00</updated><id>http://localhost:4000/posts/Caffe-Learning-Notes(1)</id><content type="html" xml:base="http://localhost:4000/posts/2017-07-03-Caffe-Learning-Notes(1)">&lt;p&gt;之前一直在学习&lt;em&gt;Transfer Learning&lt;/em&gt;，看到&lt;em&gt;DAN&lt;/em&gt;和&lt;em&gt;RTN&lt;/em&gt;的源代码都是用Caffe写的，所以趁此机会来学习一下Caffe的源代码，为了之后能自己写出来自己的类。&lt;/p&gt;
 
 &lt;p&gt;本文在全局上主要参考&lt;a href=&quot;https://buptldy.github.io/2016/10/09/2016-10-09-Caffe_Code/&quot;&gt;Caffe Source Code Analysis
 &lt;/a&gt;这篇博客。这个里面对整个初始化和训练做了一个比较高层次的简单的介绍，可以通读一下来学习基本过程。&lt;/p&gt;
@@ -1773,10 +1841,9 @@ caffe::ReadSolverParamsFromTextFileOrDie(FLAGS_solver, &amp;amp;solver_param);
 
 &lt;p&gt;在Caffe提供的例子里，训练LeNet网络的命令为：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cd $CAFFE_ROOT
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cd $CAFFE_ROOT
 ./build/tools/caffe train --solver=examples/mnist/lenet_solver.prototxt
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;其中第一个参数&lt;code class=&quot;highlighter-rouge&quot;&gt;build/tools/caffe&lt;/code&gt;是Caffe框架的主要框架，由&lt;code class=&quot;highlighter-rouge&quot;&gt;tools/caffe.cpp&lt;/code&gt;文件编译而来，第二个参数&lt;code class=&quot;highlighter-rouge&quot;&gt;train&lt;/code&gt;表示是要训练网络，第三个参数是 &lt;code class=&quot;highlighter-rouge&quot;&gt;solver&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;protobuf&lt;/code&gt; 描述文件。在Caffe中，网络模型的描述及其求解都是通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;protobuf&lt;/code&gt; 定义的，并不需要通过敲代码来实现。同时，模型的参数也是通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;protobuf&lt;/code&gt; 实现加载和存储，包括 CPU 与 GPU 之间的无缝切换，都是通过配置来实现的，不需要通过硬编码的方式实现。&lt;/p&gt;
 
@@ -1787,24 +1854,22 @@ caffe::ReadSolverParamsFromTextFileOrDie(FLAGS_solver, &amp;amp;solver_param);
 
 &lt;p&gt;在我们上面所说的训练LeNet的例子中，传入的第二个参数为&lt;code class=&quot;highlighter-rouge&quot;&gt;train&lt;/code&gt;，所以调用的函数为&lt;code class=&quot;highlighter-rouge&quot;&gt;caffe.cpp&lt;/code&gt;中的&lt;code class=&quot;highlighter-rouge&quot;&gt;int train()&lt;/code&gt;函数，接下来主要看这个函数的内容。在&lt;code class=&quot;highlighter-rouge&quot;&gt;train&lt;/code&gt;函数中有下面两行代码，下面的代码定义了一个指向&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;的&lt;code class=&quot;highlighter-rouge&quot;&gt;shared_ptr&lt;/code&gt;。其中主要是通过调用&lt;code class=&quot;highlighter-rouge&quot;&gt;SolverRegistry&lt;/code&gt;这个类的静态成员函数&lt;code class=&quot;highlighter-rouge&quot;&gt;CreateSolver&lt;/code&gt;得到一个指向&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;的指针来构造&lt;code class=&quot;highlighter-rouge&quot;&gt;shared_ptr&lt;/code&gt;类型的solver。而且由于C++多态的特性，尽管solver是一个指向基类Solver类型的指针，通过solver这个智能指针来调用各个成员函数会调用到各个子类(SGDSolver等)的函数。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// caffe.cpp
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// caffe.cpp
 // 其中输入参数solver_param就是上面所说的第三个参数：网络的模型及求解文件
 shared_ptr&amp;lt;caffe::Solver&amp;lt;float&amp;gt; &amp;gt;
     solver(caffe::SolverRegistry&amp;lt;float&amp;gt;::CreateSolver(solver_param);
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;从上面代码可以看出，会先调用父类&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;的构造函数，如下所示。&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;类的构造函数通过&lt;code class=&quot;highlighter-rouge&quot;&gt;Init(param)&lt;/code&gt;函数来初始化网络。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//solver.cpp
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//solver.cpp
 template &amp;lt;typename Dtype&amp;gt;
 Solver&amp;lt;Dtype&amp;gt;::Solver(const SolverParameter&amp;amp; param, const Solver* root_solver)
     : net_(), callbacks_(), root_solver_(root_solver),requested_early_exit_(false)
 {
   Init(param);
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;而在&lt;code class=&quot;highlighter-rouge&quot;&gt;Init(paran)&lt;/code&gt;函数中，又主要是通过&lt;code class=&quot;highlighter-rouge&quot;&gt;InitTrainNet()&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;InitTestNets()&lt;/code&gt;函数分别来搭建训练网络结构和测试网络结构。&lt;/p&gt;
 
@@ -1823,7 +1888,7 @@ Solver&amp;lt;Dtype&amp;gt;::Solver(const SolverParameter&amp;amp; param, const 
   &lt;li&gt;AppendParam：对上面申请的可学习参数进行设置，主要包括学习率和正则率等。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//net.cpp Init()
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//net.cpp Init()
 for (int layer_id = 0; layer_id &amp;lt; param.layer_size(); ++layer_id) {//param是网络参数，layer_size()返回网络拥有的层数
     const LayerParameter&amp;amp; layer_param = param.layer(layer_id);//获取当前layer的参数
     layers_.push_back(LayerRegistry&amp;lt;Dtype&amp;gt;::CreateLayer(layer_param));//根据参数实例化layer
@@ -1850,22 +1915,20 @@ layers_[layer_id]-&amp;gt;SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
 
 
     }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;经过上面的过程，&lt;code class=&quot;highlighter-rouge&quot;&gt;Net&lt;/code&gt;类的初始化工作基本就完成了。总体的流程大概就是新建一个&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;对象，然后调用&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;类的构造函数，然后在&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;的构造函数中又会新建&lt;code class=&quot;highlighter-rouge&quot;&gt;Net&lt;/code&gt;类实例，在&lt;code class=&quot;highlighter-rouge&quot;&gt;Net&lt;/code&gt;类的构造函数中又会新建各个&lt;code class=&quot;highlighter-rouge&quot;&gt;Layer&lt;/code&gt;的实例,一直具体到设置每个&lt;code class=&quot;highlighter-rouge&quot;&gt;Blob&lt;/code&gt;,大概就介绍完了网络初始化的工作。&lt;/p&gt;
 
 &lt;h3 id=&quot;训练过程&quot;&gt;训练过程&lt;/h3&gt;
 &lt;p&gt;完成初始化之后，就可以开始对网络经行训练了，开始训练的代码如下所示，指向Solver类的指针solver开始调用Solver类的成员函数Solve()，名称比较绕啊。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 开始优化
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// 开始优化
 solver-&amp;gt;Solve();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Solve&lt;/code&gt;函数其实主要就是调用了&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;的另一个成员函数&lt;code class=&quot;highlighter-rouge&quot;&gt;Step()&lt;/code&gt;来完成实际的迭代训练过程。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//solver.cpp
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//solver.cpp
 template &amp;lt;typename Dtype&amp;gt;
 void Solver&amp;lt;Dtype&amp;gt;::Solve(const char* resume_file) {
   ...
@@ -1876,12 +1939,11 @@ void Solver&amp;lt;Dtype&amp;gt;::Solve(const char* resume_file) {
   ...
   LOG(INFO) &amp;lt;&amp;lt; &quot;Optimization Done.&quot;;
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;顺着来看看这个&lt;code class=&quot;highlighter-rouge&quot;&gt;Step()&lt;/code&gt;函数的主要代码,首先是一个大循环设置了总的迭代次数，在每次迭代中训练iter_size x batch_size个样本，这个设置是为了在GPU的显存不够的时候使用，比如我本来想把batch_size设置为128，iter_size是默认为1的，但是会&lt;code class=&quot;highlighter-rouge&quot;&gt;out_of_memory&lt;/code&gt;，借助这个方法，可以设置batch_size=32，iter_size=4，那实际上每次迭代还是处理了128个数据。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//solver.cpp
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//solver.cpp
 template &amp;lt;typename Dtype&amp;gt;
 void Solver&amp;lt;Dtype&amp;gt;::Step(int iters) {
   ...
@@ -1921,18 +1983,16 @@ void Solver&amp;lt;Dtype&amp;gt;::Step(int iters) {
 
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;上面&lt;code class=&quot;highlighter-rouge&quot;&gt;Step()&lt;/code&gt;函数主要分为三部分：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;loss += net_-&amp;gt;ForwardBackward();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;loss += net_-&amp;gt;ForwardBackward();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这行代码通过&lt;code class=&quot;highlighter-rouge&quot;&gt;Net&lt;/code&gt;类的&lt;code class=&quot;highlighter-rouge&quot;&gt;net_&lt;/code&gt;指针调用其成员函数&lt;code class=&quot;highlighter-rouge&quot;&gt;ForwardBackward()&lt;/code&gt;，其代码如下所示,分别调用了成员函数&lt;code class=&quot;highlighter-rouge&quot;&gt;Forward(&amp;amp;loss)&lt;/code&gt;和成员函数&lt;code class=&quot;highlighter-rouge&quot;&gt;Backward()&lt;/code&gt;来进行前向传播和反向传播。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// net.hpp
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// net.hpp
 // 进行一次正向传播，一次反向传播
 Dtype ForwardBackward() {
   Dtype loss;
@@ -1940,34 +2000,30 @@ Dtype ForwardBackward() {
   Backward();
   return loss;
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;前面的&lt;code class=&quot;highlighter-rouge&quot;&gt;Forward(&amp;amp;loss)&lt;/code&gt;函数最终会执行到下面一段代码,&lt;code class=&quot;highlighter-rouge&quot;&gt;Net&lt;/code&gt;类的&lt;code class=&quot;highlighter-rouge&quot;&gt;Forward()&lt;/code&gt;函数会对网络中的每一层执行&lt;code class=&quot;highlighter-rouge&quot;&gt;Layer&lt;/code&gt;类的成员函数&lt;code class=&quot;highlighter-rouge&quot;&gt;Forward()&lt;/code&gt;，而具体的每一层&lt;code class=&quot;highlighter-rouge&quot;&gt;Layer&lt;/code&gt;的派生类会重写&lt;code class=&quot;highlighter-rouge&quot;&gt;Forward()&lt;/code&gt;函数来实现不同层的前向计算功能。上面的&lt;code class=&quot;highlighter-rouge&quot;&gt;Backward()&lt;/code&gt;反向求导函数也和&lt;code class=&quot;highlighter-rouge&quot;&gt;Forward()&lt;/code&gt;类似，调用不同层的&lt;code class=&quot;highlighter-rouge&quot;&gt;Backward()&lt;/code&gt;函数来计算每层的梯度。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//net.cpp
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//net.cpp
 for (int i = start; i &amp;lt;= end; ++i) {
 // 对每一层进行前向计算，返回每层的loss，其实只有最后一层loss不为0
   Dtype layer_loss = layers_[i]-&amp;gt;Forward(bottom_vecs_[i], top_vecs_[i]);
   loss += layer_loss;
   if (debug_info_) { ForwardDebugInfo(i); }
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;UpdateSmoothedLoss();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;UpdateSmoothedLoss();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这个函数主要做&lt;code class=&quot;highlighter-rouge&quot;&gt;Loss&lt;/code&gt;的平滑。由于Caffe的训练方式是SGD，我们无法把所有的数据同时放入模型进行训练，那么部分数据产生的&lt;code class=&quot;highlighter-rouge&quot;&gt;Loss&lt;/code&gt;就可能会和全样本的平均&lt;code class=&quot;highlighter-rouge&quot;&gt;Loss&lt;/code&gt;不同，在必要时候将&lt;code class=&quot;highlighter-rouge&quot;&gt;Loss&lt;/code&gt;和历史过程中更新的&lt;code class=&quot;highlighter-rouge&quot;&gt;Loss&lt;/code&gt;求平均就可以减少&lt;code class=&quot;highlighter-rouge&quot;&gt;Loss&lt;/code&gt;的震荡问题&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ApplyUpdate();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ApplyUpdate();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这个函数是&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;类的纯虚函数，需要派生类来实现，比如SGDSolver类实现的&lt;code class=&quot;highlighter-rouge&quot;&gt;ApplyUpdate()&lt;/code&gt;;函数如下，主要内容包括：设置参数的学习率；对梯度进行Normalize；对反向求导得到的梯度添加正则项的梯度；最后根据SGD算法计算最终的梯度；最后的最后把计算得到的最终梯度对权值进行更新。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;template &amp;lt;typename Dtype&amp;gt;
 void SGDSolver&amp;lt;Dtype&amp;gt;::ApplyUpdate() {
   CHECK(Caffe::root_solver());
 
@@ -1998,10 +2054,9 @@ void SGDSolver&amp;lt;Dtype&amp;gt;::ApplyUpdate() {
   // 调用`Net::Update`更新所有的参数
   this-&amp;gt;net_-&amp;gt;Update();
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;等进行了所有的循环，网络的训练也算是完成了。上面大概说了下使用Caffe进行网络训练时网络初始化以及前向传播、反向传播、梯度更新的过程，其中省略了大量的细节。上面还有很多东西都没提到，比如说Caffe中&lt;code class=&quot;highlighter-rouge&quot;&gt;Layer&lt;/code&gt;派生类的注册及各个具体层前向反向的实现、&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;派生类的注册、网络结构的读取、模型的保存等等大量内容。&lt;/p&gt;</content><author><name></name></author><summary type="html">之前一直在学习Transfer Learning，看到DAN和RTN的源代码都是用Caffe写的，所以趁此机会来学习一下Caffe的源代码，为了之后能自己写出来自己的类。</summary></entry><entry><title type="html">From object recognition to instance recognition</title><link href="http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition.html" rel="alternate" type="text/html" title="From object recognition to instance recognition" /><published>2017-06-25T20:38:00+08:00</published><updated>2017-06-25T20:38:00+08:00</updated><id>http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition</id><content type="html" xml:base="http://localhost:4000/deep/learning,/object/recognition/2017/06/25/From-object-recognition-to-instance-recognition.html">&lt;p&gt;最近考完试重新开始学习物体识别相关的知识。之前大作业的时候就学习过RCNN系列的三篇论文，然后自己尝试了基于SegNet的semantic segmentation任务。前段时间看Kaiming大神 的Mask R-CNN，又想重新温故一下这一系列的文章，正好也是第一次在知乎上写文章，就当作给自己看的论文的一个总结的地方吧。（反正也没人看，我就随便写写了）
+&lt;p&gt;等进行了所有的循环，网络的训练也算是完成了。上面大概说了下使用Caffe进行网络训练时网络初始化以及前向传播、反向传播、梯度更新的过程，其中省略了大量的细节。上面还有很多东西都没提到，比如说Caffe中&lt;code class=&quot;highlighter-rouge&quot;&gt;Layer&lt;/code&gt;派生类的注册及各个具体层前向反向的实现、&lt;code class=&quot;highlighter-rouge&quot;&gt;Solver&lt;/code&gt;派生类的注册、网络结构的读取、模型的保存等等大量内容。&lt;/p&gt;</content><author><name>Jim Chen</name></author><summary type="html">之前一直在学习Transfer Learning，看到DAN和RTN的源代码都是用Caffe写的，所以趁此机会来学习一下Caffe的源代码，为了之后能自己写出来自己的类。</summary></entry><entry><title type="html">From object recognition to instance recognition</title><link href="http://localhost:4000/posts/2017-06-25-From-object-recognition-to-instance-recognition" rel="alternate" type="text/html" title="From object recognition to instance recognition" /><published>2017-06-25T20:38:00+08:00</published><updated>2017-06-25T20:38:00+08:00</updated><id>http://localhost:4000/posts/From-object-recognition-to-instance-recognition</id><content type="html" xml:base="http://localhost:4000/posts/2017-06-25-From-object-recognition-to-instance-recognition">&lt;p&gt;最近考完试重新开始学习物体识别相关的知识。之前大作业的时候就学习过RCNN系列的三篇论文，然后自己尝试了基于SegNet的semantic segmentation任务。前段时间看Kaiming大神 的Mask R-CNN，又想重新温故一下这一系列的文章，正好也是第一次在知乎上写文章，就当作给自己看的论文的一个总结的地方吧。（反正也没人看，我就随便写写了）
 先推荐一个之前在知乎上看的一个专栏（&lt;a href=&quot;https://zhuanlan.zhihu.com/xiaoleimlnote&quot;&gt;晓雷机器学习笔记&lt;/a&gt;）的这个系列，感觉写的也很不错，所以放在这里做个列表：&lt;/p&gt;
 
 &lt;ul&gt;
@@ -2014,4 +2069,4 @@ void SGDSolver&amp;lt;Dtype&amp;gt;::ApplyUpdate() {
   &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/25167153?refer=xiaoleimlnote&quot;&gt;YOLO2&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;之后应该是直接看到了Mask R-CNN这篇文章，附上Tensorflow版的代码地址（&lt;a href=&quot;https://github.com/CharlesShang/FastMaskRCNN&quot;&gt;CharlesShang/FastMaskRCNN&lt;/a&gt;），近期准备看看源码学习一下。&lt;/p&gt;</content><author><name></name></author><summary type="html">最近考完试重新开始学习物体识别相关的知识。之前大作业的时候就学习过RCNN系列的三篇论文，然后自己尝试了基于SegNet的semantic segmentation任务。前段时间看Kaiming大神 的Mask R-CNN，又想重新温故一下这一系列的文章，正好也是第一次在知乎上写文章，就当作给自己看的论文的一个总结的地方吧。（反正也没人看，我就随便写写了） 先推荐一个之前在知乎上看的一个专栏（晓雷机器学习笔记）的这个系列，感觉写的也很不错，所以放在这里做个列表：</summary></entry></feed>
+&lt;p&gt;之后应该是直接看到了Mask R-CNN这篇文章，附上Tensorflow版的代码地址（&lt;a href=&quot;https://github.com/CharlesShang/FastMaskRCNN&quot;&gt;CharlesShang/FastMaskRCNN&lt;/a&gt;），近期准备看看源码学习一下。&lt;/p&gt;</content><author><name>Jim Chen</name></author><summary type="html">最近考完试重新开始学习物体识别相关的知识。之前大作业的时候就学习过RCNN系列的三篇论文，然后自己尝试了基于SegNet的semantic segmentation任务。前段时间看Kaiming大神 的Mask R-CNN，又想重新温故一下这一系列的文章，正好也是第一次在知乎上写文章，就当作给自己看的论文的一个总结的地方吧。（反正也没人看，我就随便写写了） 先推荐一个之前在知乎上看的一个专栏（晓雷机器学习笔记）的这个系列，感觉写的也很不错，所以放在这里做个列表：</summary></entry></feed>
