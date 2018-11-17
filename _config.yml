@@ -45,6 +45,11 @@ projects:
     url: https://sites.google.com/view/forest-trail-dataset
     role: Author
     category: UAV, Transfer Learning, DAN
+  - title: Rich Details Monocular Depth Prediction
+    teaser: Monocular depth prediction with relative supervision to preserve better object details
+    url: https://sites.google.com/view/rich-detail-depth
+    role: Author
+    category: Depth Prediction, Relative Supervision
 
 #################
 # Site Settings #
