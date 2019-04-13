@@ -35,11 +35,6 @@ nav_menu:
 
 # Objects listed here will appear on the /projects.html page.
 projects:
-  - title: Smart Car
-    teaser: Avoid obstacles automatically using image processing and machine learning
-    url: https://github.com/jimchenhub/Smart-Car
-    role: Creator
-    category: OpenCV, CNN, Raspberry PI 
   - title: Transferable UAV
     teaser: A new pipeline of training a monocular UAV to fly a collision-free trajectory along the dense forest trail
     url: https://sites.google.com/view/forest-trail-dataset
@@ -50,6 +45,16 @@ projects:
     url: https://sites.google.com/view/rich-detail-depth
     role: Author
     category: Depth Prediction, Relative Supervision
+  - title: VALID
+    teaser: Virtual AeriaL Image Dataset
+    url: https://sites.google.com/view/valid-dataset
+    role: Author
+    category: Aerial Image, Dataset
+  - title: Smart Car
+    teaser: Avoid obstacles automatically using image processing and machine learning
+    url: https://github.com/jimchenhub/Smart-Car
+    role: Creator
+    category: OpenCV, CNN, Raspberry PI 
 
 #################
 # Site Settings #
