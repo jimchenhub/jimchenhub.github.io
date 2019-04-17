@@ -29,5 +29,35 @@ DeconvNet为了提高学习的效果，1）采用了two-stage的训练方法，�
 
 ## SegNet
 
+与DeconvNet相比，SegNet做了更多性能和内存、速度上的权衡。首先SegNet去掉了FC层，所以参数量降低到了1/10的程度，同时在Upsampling的时候，是使用的conv层而非Deconv层。
 
+![DeconvNet](/images/segnet/segnet.jpg)
 
+- 把本文提出的架构和FCN、DeepLab-LargeFOV、DeconvNet做了比较，这种比较揭示了在实现良好分割性能的前提下内存使用情况与分割准确性的权衡。
+- SegNet的主要动机是场景理解的应用。因此它在设计的时候考虑了要在预测期间保证内存和计算时间上的效率。
+- 定量的评估表明，SegNet在和其他架构的比较上，时间和内存的使用都比较高效。
+
+文中对不同的decoder组件做了对比分析
+
+- Bilinear-Interpolation : 双线性插值上采样。
+- SegNet-Basic: 4*(encodes[conv+bn+relu+maxpooling] + decoders[conv+bn]) ，kenel size: 7*7。
+- SegNet-Basic-SingleChannelDecoder: decoder采用单通道滤波器，可以有效减少参数数量。
+- SegNet-Basic-EncoderAddition: 将decoder与encoder对应的特征图相加。
+- FCN-Basic:与SegNet-Basic具有相同的encoders，但是decoders采用FCN的反卷积方式。
+- FCN-Basic-NoAddition:去掉特征图相加的步骤，只学习上采样的卷积核。
+- FCN-Basic-NoDimReduction: 不进行降维。
+
+![DeconvNet](/images/segnet/segnet-result.jpg)
+
+通过上表分析，可以得到如下分析结果：
+
+- bilinear interpolation 表现最差，说明了在进行分割时，decoder学习的重要性。
+- SegNet-Basic与FCN-Basic对比，均具有较好的精度，不同点在于SegNet存储空间消耗小，FCN-Basic由于feature map进行了降维，所以时间更短。
+- SegNet-Basic与FCN-Basic-NoAddition对比，两者的decoder有很大相似之处，SegNet-Basic的精度更高，一方面是由于SegNet-Basic具有较大的decoder,同时说明了encoder过程中低层次feature map的重要性。
+- FCN-Basic-NoAddition与SegNet-Basic-SingleChannelDecoder：证明了当面临存储消耗，精度和inference时间的妥协的时候，我们可以选择SegNet，当内存和inference时间不受限的时候，模型越大，表现越好。
+
+作者总结到：
+
+- encoder特征图全部存储时，性能最好。 这最明显地反映在语义轮廓描绘度量（BF）中。
+- 当限制存储时，可以使用适当的decoder（例如SegNet类型）来存储和使用encoder特征图（维数降低，max-pooling indices）的压缩形式来提高性能。
+- 更大的decoder提高了网络的性能。
